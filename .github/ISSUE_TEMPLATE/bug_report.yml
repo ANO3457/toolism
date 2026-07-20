@@ -1,0 +1,38 @@
+name: Bug report
+description: toolslim crashed, or slimmed a tool definition incorrectly
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! A tool definition that reproduces the problem is the most useful thing you can share.
+        If slimming changed which calls validate, that is a high-priority bug.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: input
+    attributes:
+      label: Tool definition (JSON) that reproduces it
+      description: Trim it to the smallest example that still shows the problem. Remove anything private.
+      render: json
+  - type: input
+    id: command
+    attributes:
+      label: Command or code you ran
+      placeholder: toolslim slim tools.json --verify
+  - type: textarea
+    id: output
+    attributes:
+      label: Output (with TOOLSLIM_DEBUG=1 for a traceback)
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      placeholder: "toolslim --version; Python 3.12; OS"
+    validations:
+      required: true

@@ -1,0 +1,36 @@
+name: Rule idea
+description: Propose a new slimming rule
+labels: [rule, enhancement]
+body:
+  - type: textarea
+    id: pattern
+    attributes:
+      label: Wasteful pattern
+      description: What do schemas contain that costs tokens? Which generator emits it (Pydantic, zod, OpenAPI, ...)?
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: rewrite
+    attributes:
+      label: Proposed rewrite
+      render: json
+    validations:
+      required: true
+  - type: dropdown
+    id: safety
+    attributes:
+      label: Safety
+      options:
+        - SAFE - accepts exactly the same calls and removes only what the model already knows
+        - LOSSY_ANNOTATIONS - same calls, but drops annotation text
+        - CHANGES_VALIDATION - changes which calls validate
+    validations:
+      required: true
+  - type: textarea
+    id: why-safe
+    attributes:
+      label: Why is it safe? When must it NOT apply?
+      description: Edge cases such as $ref siblings, strict mode, draft-07 vs 2020-12, or a sibling keyword that changes the meaning.
+    validations:
+      required: true
