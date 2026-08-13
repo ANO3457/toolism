@@ -1,0 +1,14 @@
+{
+  "toolslim_baseline": 1,
+  "toolslim_version": "0.1.0.dev0",
+  "tokenizer": "tiktoken:o200k_base",
+  "total_tokens": 1107,
+  "tools": {
+    "create_contact": 354,
+    "list_pipelines": 46,
+    "log_activity": 178,
+    "merge_contacts": 112,
+    "search_contacts": 176,
+    "update_deal": 241
+  }
+}
