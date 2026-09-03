@@ -1,0 +1,157 @@
+{
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_weather",
+        "description": "Get the current weather for a location.",
+        "parameters": {
+          "$defs": {
+            "Unit": {
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "title": "Unit",
+              "type": "string"
+            }
+          },
+          "description": "Get the current weather for a location.",
+          "properties": {
+            "location": {
+              "description": "City and country, e.g. Paris, France",
+              "title": "Location",
+              "type": "string"
+            },
+            "unit": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Unit"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "The unit"
+            },
+            "include_forecast": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Include forecast",
+              "title": "Include Forecast"
+            }
+          },
+          "required": [
+            "location"
+          ],
+          "title": "GetWeather",
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "book_flight",
+        "description": "Book a flight for one or more passengers.\n\nAlways confirm the itinerary and total price with the user before booking.",
+        "parameters": {
+          "$defs": {
+            "Passenger": {
+              "properties": {
+                "first_name": {
+                  "description": "First name",
+                  "title": "First Name",
+                  "type": "string"
+                },
+                "last_name": {
+                  "description": "Last name",
+                  "title": "Last Name",
+                  "type": "string"
+                },
+                "date_of_birth": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "Date of birth (YYYY-MM-DD)",
+                  "title": "Date Of Birth"
+                }
+              },
+              "required": [
+                "first_name",
+                "last_name"
+              ],
+              "title": "Passenger",
+              "type": "object"
+            }
+          },
+          "description": "Book a flight for one or more passengers.\n\nAlways confirm the itinerary and total price with the user before booking.",
+          "properties": {
+            "flight_id": {
+              "description": "The flight ID",
+              "title": "Flight Id",
+              "type": "string"
+            },
+            "passengers": {
+              "description": "Passengers to book",
+              "items": {
+                "$ref": "#/$defs/Passenger"
+              },
+              "title": "Passengers",
+              "type": "array"
+            },
+            "cabin": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "economy",
+                    "premium",
+                    "business"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Cabin class",
+              "title": "Cabin"
+            },
+            "seat_preference": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Seat Preference"
+            }
+          },
+          "required": [
+            "flight_id",
+            "passengers"
+          ],
+          "title": "BookFlight",
+          "type": "object"
+        }
+      }
+    }
+  ]
+}
