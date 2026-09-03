@@ -1,0 +1,68 @@
+[
+  {
+    "name": "search_docs",
+    "description": "Search the product documentation and return the most relevant passages.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "The search query"
+        },
+        "version": {
+          "type": "string",
+          "description": "Product version to search, e.g. 4.2. Defaults to the latest version."
+        },
+        "limit": {
+          "type": "number",
+          "default": 5,
+          "description": "Maximum number of passages"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  {
+    "name": "open_ticket",
+    "description": "Open a support ticket.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title"
+        },
+        "body": {
+          "type": "string",
+          "description": "Describe the problem, what you expected and the steps to reproduce it."
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "description": "Severity"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Labels"
+        }
+      },
+      "required": [
+        "title",
+        "body"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  }
+]

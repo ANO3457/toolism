@@ -1,0 +1,300 @@
+{
+  "tools": [
+    {
+      "name": "create_contact",
+      "description": "Create a contact.\n\nUse this when the user asks to add a person to the CRM. Check for an existing\ncontact with search_contacts first, to avoid duplicates.\n",
+      "inputSchema": {
+        "properties": {
+          "contact": {
+            "$ref": "#/$defs/Contact"
+          }
+        },
+        "required": [
+          "contact"
+        ],
+        "type": "object",
+        "$defs": {
+          "Address": {
+            "properties": {
+              "street": {
+                "description": "Street and house number",
+                "title": "Street",
+                "type": "string"
+              },
+              "city": {
+                "description": "City",
+                "title": "City",
+                "type": "string"
+              },
+              "postal_code": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Postal code",
+                "title": "Postal Code"
+              },
+              "country": {
+                "default": "US",
+                "description": "ISO 3166 country code",
+                "title": "Country",
+                "type": "string"
+              }
+            },
+            "required": [
+              "street",
+              "city"
+            ],
+            "title": "Address",
+            "type": "object"
+          },
+          "Contact": {
+            "properties": {
+              "name": {
+                "description": "Full name",
+                "title": "Name",
+                "type": "string"
+              },
+              "email": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Email address",
+                "title": "Email"
+              },
+              "phone": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Phone"
+              },
+              "company_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The company ID",
+                "title": "Company Id"
+              },
+              "address": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Address"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "tags": {
+                "description": "Free-form tags",
+                "items": {
+                  "type": "string"
+                },
+                "title": "Tags",
+                "type": "array"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "title": "Contact",
+            "type": "object"
+          }
+        },
+        "title": "create_contactArguments"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "title": "Result",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "create_contactOutput"
+      }
+    },
+    {
+      "name": "search_contacts",
+      "description": "Search contacts by name, email or phone.\n\nResults are sorted by relevance. Pass the returned cursor to get the next page.\n",
+      "inputSchema": {
+        "properties": {
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "company_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Company Id"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tags"
+          },
+          "limit": {
+            "default": 20,
+            "description": "Maximum results",
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Cursor"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object",
+        "title": "search_contactsArguments"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Result",
+            "type": "array"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "search_contactsOutput"
+      }
+    },
+    {
+      "name": "log_activity",
+      "description": "Log an activity against a contact.\n\nActivities appear on the contact's timeline.\n",
+      "inputSchema": {
+        "properties": {
+          "contact_id": {
+            "title": "Contact Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "call",
+              "email",
+              "meeting",
+              "note"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "summary": {
+            "description": "What happened, in one or two sentences",
+            "title": "Summary",
+            "type": "string"
+          },
+          "occurred_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Occurred On"
+          },
+          "priority": {
+            "$ref": "#/$defs/Priority",
+            "default": "normal"
+          }
+        },
+        "required": [
+          "contact_id",
+          "kind",
+          "summary"
+        ],
+        "type": "object",
+        "$defs": {
+          "Priority": {
+            "enum": [
+              "low",
+              "normal",
+              "high"
+            ],
+            "title": "Priority",
+            "type": "string"
+          }
+        },
+        "title": "log_activityArguments"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "title": "Result",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "log_activityOutput"
+      }
+    }
+  ]
+}
