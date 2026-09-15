@@ -1,0 +1,102 @@
+name: toolslim check
+description: Fail a pull request when your LLM tool or MCP schemas cost more tokens than your budget.
+author: sudheer215s
+branding:
+  icon: scissors
+  color: green
+
+inputs:
+  source:
+    description: Path to a tool definitions JSON file (OpenAI, Anthropic or MCP). Use this or `mcp`.
+    required: false
+    default: ""
+  mcp:
+    description: Command that starts a stdio MCP server, e.g. `npx -y @scope/server`. Use this or `source`.
+    required: false
+    default: ""
+  baseline:
+    description: Committed baseline file. Create it with `toolslim check SOURCE -b FILE --update-baseline`.
+    required: false
+    default: .toolslim/baseline.json
+  max-increase:
+    description: Allowed growth over the baseline, `10%` and/or `500` (tokens; both = larger allowance). Default no growth.
+    required: false
+    default: ""
+  max-total:
+    description: Fail if the total tokens are above this.
+    required: false
+    default: ""
+  max-tool:
+    description: Fail if any single tool costs more tokens than this.
+    required: false
+    default: ""
+  tokenizer:
+    description: heuristic, tiktoken:<encoding> or anthropic:<model>. Must match the baseline.
+    required: false
+    default: tiktoken:o200k_base
+  update-baseline:
+    description: Write the baseline instead of checking (`true`/`false`).
+    required: false
+    default: "false"
+  allow-tokenizer-change:
+    description: Don't fail when the baseline was measured with another tokenizer.
+    required: false
+    default: "false"
+  python-version:
+    description: Python used to run toolslim.
+    required: false
+    default: "3.12"
+
+outputs:
+  status:
+    description: pass, fail or error.
+    value: ${{ steps.check.outputs.status }}
+  total:
+    description: Total tool definition tokens now.
+    value: ${{ steps.check.outputs.total }}
+  delta:
+    description: Change against the baseline in tokens (empty without a baseline).
+    value: ${{ steps.check.outputs.delta }}
+  summary-file:
+    description: Markdown summary, e.g. for a sticky pull request comment.
+    value: ${{ steps.check.outputs.summary-file }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Cache tiktoken vocabulary
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/toolslim-tiktoken
+        key: toolslim-tiktoken-${{ runner.os }}-v1
+
+    - name: Install toolslim from this action's ref
+      shell: bash
+      env:
+        WANT_MCP: ${{ inputs.mcp != '' }}
+      run: |
+        extras=""
+        if [ "$WANT_MCP" = "true" ]; then extras="[mcp]"; fi
+        python -m pip install --disable-pip-version-check --quiet "${GITHUB_ACTION_PATH}${extras}"
+
+    - name: Check tool token budget
+      id: check
+      shell: bash
+      env:
+        INPUT_SOURCE: ${{ inputs.source }}
+        INPUT_MCP: ${{ inputs.mcp }}
+        INPUT_BASELINE: ${{ inputs.baseline }}
+        INPUT_MAX_INCREASE: ${{ inputs.max-increase }}
+        INPUT_MAX_TOTAL: ${{ inputs.max-total }}
+        INPUT_MAX_TOOL: ${{ inputs.max-tool }}
+        INPUT_TOKENIZER: ${{ inputs.tokenizer }}
+        INPUT_UPDATE_BASELINE: ${{ inputs.update-baseline }}
+        INPUT_ALLOW_TOKENIZER_CHANGE: ${{ inputs.allow-tokenizer-change }}
+      run: |
+        export TIKTOKEN_CACHE_DIR="${TIKTOKEN_CACHE_DIR:-$HOME/.cache/toolslim-tiktoken}"
+        python -m toolslim._action
