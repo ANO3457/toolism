@@ -1,0 +1,57 @@
+[
+  {
+    "name": "pydantic titles on root and properties",
+    "tool": {"name": "search", "schema": {
+      "type": "object", "title": "searchArguments",
+      "properties": {
+        "user_id": {"type": "string", "title": "User Id"},
+        "q": {"type": "string", "title": "Search query"}
+      },
+      "required": ["user_id"]
+    }},
+    "expected_schema": {
+      "type": "object",
+      "properties": {
+        "user_id": {"type": "string"},
+        "q": {"type": "string", "title": "Search query"}
+      },
+      "required": ["user_id"]
+    }
+  },
+  {
+    "name": "property named title keeps the property, loses the keyword",
+    "tool": {"name": "create_issue", "schema": {
+      "type": "object",
+      "properties": {"title": {"type": "string", "title": "Title"}, "kind": {"enum": [{"title": "Kind"}], "title": "Kind"}}
+    }},
+    "expected_schema": {
+      "type": "object",
+      "properties": {"title": {"type": "string"}, "kind": {"enum": [{"title": "Kind"}]}}
+    }
+  },
+  {
+    "name": "defs title equal to its key",
+    "tool": {"name": "ship", "schema": {
+      "type": "object",
+      "properties": {"to": {"$ref": "#/$defs/Address"}},
+      "$defs": {"Address": {"type": "object", "title": "Address", "properties": {"city": {"type": "string"}}}}
+    }},
+    "expected_schema": {
+      "type": "object",
+      "properties": {"to": {"$ref": "#/$defs/Address"}},
+      "$defs": {"Address": {"type": "object", "properties": {"city": {"type": "string"}}}}
+    }
+  },
+  {
+    "name": "informative titles are kept",
+    "tool": {"name": "get_weather", "schema": {
+      "type": "object", "title": "Weather request",
+      "properties": {"loc": {"type": "string", "title": "Location (city or zip)"}, "n": {"title": 5}}
+    }}
+  },
+  {
+    "name": "root title equal to tool name with Input suffix",
+    "tool": {"name": "readFile", "schema": {"type": "object", "title": "ReadFileInput"}},
+    "expected_schema": {"type": "object"}
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "tools": [
+    {
+      "name": "create_issue",
+      "description": "Create an issue.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {"type": "string", "title": "Title", "description": "Issue title"},
+          "labels": {"type": "array", "items": {"type": "string"}, "title": "Labels"}
+        },
+        "required": ["title"]
+      },
+      "outputSchema": {"type": "object", "properties": {"id": {"type": "integer"}}}
+    },
+    {
+      "name": "ping",
+      "description": null,
+      "inputSchema": {"type": "object"}
+    }
+  ]
+}
