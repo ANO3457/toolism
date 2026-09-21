@@ -1,0 +1,85 @@
+[
+  {
+    "name": "docstring is dedented and trimmed",
+    "tool": {
+      "name": "t",
+      "description": "Look up an order by id.\n\n    Returns status and items.\n    ",
+      "schema": {
+        "type": "object"
+      }
+    },
+    "expected_description": "Look up an order by id.\n\nReturns status and items."
+  },
+  {
+    "name": "space runs and blank-line runs collapse, structure kept",
+    "tool": {
+      "name": "t",
+      "description": "Search   the   web.\n\n\n\nOptions:\n  - a\n    - b",
+      "schema": {
+        "type": "object"
+      }
+    },
+    "expected_description": "Search the web.\n\nOptions:\n  - a\n    - b"
+  },
+  {
+    "name": "schema descriptions are cleaned too, CRLF normalised",
+    "tool": {
+      "name": "t",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string",
+            "description": "  The query.  \r\n  Use quotes for phrases.  "
+          }
+        }
+      }
+    },
+    "expected_schema": {
+      "type": "object",
+      "properties": {
+        "q": {
+          "type": "string",
+          "description": "The query.\nUse quotes for phrases."
+        }
+      }
+    }
+  },
+  {
+    "name": "tabs and clean text are untouched",
+    "tool": {
+      "name": "t",
+      "description": "col1\tcol2",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "description": "Fine."
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "whitespace-only description becomes empty",
+    "tool": {
+      "name": "t",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "description": "   \n  "
+          }
+        }
+      }
+    },
+    "expected_schema": {
+      "type": "object",
+      "properties": {
+        "q": {
+          "description": ""
+        }
+      }
+    }
+  }
+]

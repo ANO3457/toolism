@@ -1,0 +1,33 @@
+[
+  {
+    "name": "optional null default dropped, required kept",
+    "tool": {"name": "t", "schema": {
+      "type": "object",
+      "properties": {
+        "a": {"type": ["string", "null"], "default": null},
+        "b": {"type": ["string", "null"], "default": null},
+        "c": {"type": "integer", "default": 0}
+      },
+      "required": ["b"]
+    }},
+    "expected_schema": {
+      "type": "object",
+      "properties": {
+        "a": {"type": ["string", "null"]},
+        "b": {"type": ["string", "null"], "default": null},
+        "c": {"type": "integer", "default": 0}
+      },
+      "required": ["b"]
+    }
+  },
+  {
+    "name": "strict tools are left alone",
+    "strict": true,
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"a": {"type": ["string", "null"], "default": null}}, "required": [], "additionalProperties": false}}
+  },
+  {
+    "name": "nested objects too",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"o": {"type": "object", "properties": {"x": {"default": null}}}}}},
+    "expected_schema": {"type": "object", "properties": {"o": {"type": "object", "properties": {"x": {}}}}}
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "echoing descriptions are dropped",
+    "tool": {"name": "t", "description": "The tool.", "schema": {
+      "type": "object", "description": "Arguments.",
+      "properties": {
+        "user_id": {"type": "string", "description": "The user ID."},
+        "pageSize": {"type": "integer", "description": "Page size"},
+        "limit": {"type": "integer", "description": "Limit"},
+        "owner_id": {"type": "string", "description": "The owner's ID"}
+      }
+    }},
+    "expected_schema": {
+      "type": "object", "description": "Arguments.",
+      "properties": {
+        "user_id": {"type": "string"},
+        "pageSize": {"type": "integer"},
+        "limit": {"type": "integer"},
+        "owner_id": {"type": "string"}
+      }
+    }
+  },
+  {
+    "name": "descriptions with extra meaning are kept",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {
+      "max_results": {"type": "integer", "description": "Maximum number of results"},
+      "query": {"type": "string", "description": "Search query"},
+      "id": {"type": "string", "description": "Unique ID"},
+      "x": {"type": "string", "description": "The value."}
+    }}}
+  }
+]

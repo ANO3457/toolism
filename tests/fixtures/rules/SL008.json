@@ -1,0 +1,24 @@
+[
+  {
+    "name": "no-op keywords are dropped, properties: {} kept",
+    "tool": {"name": "t", "schema": {
+      "type": "object", "description": "", "properties": {}, "required": [], "additionalProperties": true, "$defs": {}
+    }},
+    "expected_schema": {"type": "object", "properties": {}}
+  },
+  {
+    "name": "single-element type arrays and empty items",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"tags": {"type": ["array"], "items": {}}, "x": {"type": "array", "items": true, "additionalItems": true}}}},
+    "expected_schema": {"type": "object", "properties": {"tags": {"type": "array"}, "x": {"type": "array"}}}
+  },
+  {
+    "name": "strict tools keep required and additionalProperties",
+    "strict": true,
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {}, "required": [], "additionalProperties": false, "description": ""}},
+    "expected_schema": {"type": "object", "properties": {}, "required": [], "additionalProperties": false}
+  },
+  {
+    "name": "meaningful values are kept",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"a": {"type": ["string", "null"], "items": {"type": "string"}}}, "required": ["a"], "additionalProperties": false}}
+  }
+]

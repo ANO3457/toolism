@@ -1,0 +1,44 @@
+[
+  {
+    "name": "draft-07 URI on a plain schema is dropped",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"], "additionalProperties": false, "$schema": "http://json-schema.org/draft-07/schema#"}},
+    "expected_schema": {"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"], "additionalProperties": false}
+  },
+  {
+    "name": "2020-12 URI is always safe to drop",
+    "tool": {"name": "t", "schema": {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "prefixItems": [{"type": "string"}]}},
+    "expected_schema": {"type": "object", "prefixItems": [{"type": "string"}]}
+  },
+  {
+    "name": "ref with a neutral sibling is fine",
+    "tool": {"name": "t", "schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object", "properties": {"a": {"$ref": "#/definitions/S", "description": "An a"}}, "required": ["a"],
+      "definitions": {"S": {"type": "string"}}
+    }},
+    "expected_schema": {
+      "type": "object", "properties": {"a": {"$ref": "#/definitions/S", "description": "An a"}}, "required": ["a"],
+      "definitions": {"S": {"type": "string"}}
+    }
+  },
+  {
+    "name": "ref with a validating sibling keeps the URI",
+    "tool": {"name": "t", "schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object", "properties": {"a": {"$ref": "#/definitions/S", "maxLength": 2}}, "required": ["a"],
+      "definitions": {"S": {"type": "string"}}
+    }}
+  },
+  {
+    "name": "array-form items keeps the URI",
+    "tool": {"name": "t", "schema": {"$schema": "http://json-schema.org/draft-07/schema#", "type": "array", "items": [{"type": "string"}]}}
+  },
+  {
+    "name": "draft-04 and unknown URIs are kept",
+    "tool": {"name": "t", "schema": {"$schema": "http://json-schema.org/draft-04/schema#", "type": "object"}}
+  },
+  {
+    "name": "custom meta-schema is kept",
+    "tool": {"name": "t", "schema": {"$schema": "https://example.com/meta", "type": "object"}}
+  }
+]
