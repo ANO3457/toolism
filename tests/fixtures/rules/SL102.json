@@ -1,0 +1,11 @@
+[
+  {
+    "name": "examples and example are removed everywhere",
+    "tool": {"name": "t", "schema": {"type": "object", "examples": [{"q": "x"}], "properties": {"q": {"type": "string", "examples": ["cats", "dogs"], "example": "cats"}}}},
+    "expected_schema": {"type": "object", "properties": {"q": {"type": "string"}}}
+  },
+  {
+    "name": "a property named examples is not removed",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"examples": {"type": "array"}}}}
+  }
+]

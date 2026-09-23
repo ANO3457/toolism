@@ -1,0 +1,18 @@
+[
+  {
+    "name": "long schema description cut at a sentence end",
+    "options": {"max_chars": 60},
+    "tool": {"name": "t", "description": "A tool description that is long but is not touched by default because include_tool is off.", "schema": {"type": "object", "properties": {"q": {"type": "string", "description": "The search query. Supports quotes, AND, OR and NOT. See the docs for the full grammar."}}}},
+    "expected_schema": {"type": "object", "properties": {"q": {"type": "string", "description": "The search query. Supports quotes, AND, OR and NOT."}}}
+  },
+  {
+    "name": "falls back to a word boundary with an ellipsis",
+    "options": {"max_chars": 30, "include_tool": true},
+    "tool": {"name": "t", "description": "Fetch every record in the warehouse table quickly", "schema": {"type": "object"}},
+    "expected_description": "Fetch every record in the…"
+  },
+  {
+    "name": "short descriptions are untouched",
+    "tool": {"name": "t", "description": "Short.", "schema": {"type": "object", "properties": {"q": {"description": "Short too."}}}}
+  }
+]
