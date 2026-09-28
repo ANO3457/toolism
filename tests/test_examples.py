@@ -1,0 +1,61 @@
+"""The examples run, and the numbers quoted in the README are the numbers toolslim produces."""
+
+from __future__ import annotations
+
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+import toolslim
+from conftest import requires_tiktoken
+
+ROOT = Path(__file__).resolve().parents[1]
+EXAMPLES = sorted((ROOT / "examples").glob("*.json"))
+
+
+@pytest.mark.parametrize("path", EXAMPLES, ids=lambda p: p.name)
+def test_example_files_slim_with_savings(path: Path) -> None:
+    toolset = toolslim.load(path)
+    result = toolslim.slim(toolset, tokenizer="heuristic", verify=True)
+    assert result.report.saved > 0
+    assert not result.report.rollbacks
+
+
+def test_agent_startup_example_runs_offline() -> None:
+    out = subprocess.run(
+        [sys.executable, str(ROOT / "examples" / "agent_startup.py")],
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    ).stdout
+    match = re.fullmatch(r"tool definitions: (\d+) -> (\d+) tokens per request.*\n", out)
+    assert match is not None, out
+    assert int(match.group(2)) < int(match.group(1))
+
+
+@requires_tiktoken
+def test_readme_quickstart_numbers_are_real() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    toolset = toolslim.load(ROOT / "examples" / "mcp_tools.json")
+    report = toolslim.measure(toolset, tokenizer="tiktoken:o200k_base")
+    slim = toolslim.slim(toolset, tokenizer="tiktoken:o200k_base").report
+    assert f"{report.total} tokens across 3 tools (average {report.total // 3})" in readme
+    assert f"Slimmed 3 tools: {slim.before} → {slim.after} tokens" in readme
+    assert f"baseline {slim.after}, +{slim.saved}," in readme
+    for tool in report.tools:
+        assert re.search(rf"│ {tool.name}\s+│\s+{tool.tokens} │", readme), tool.name
+
+
+def test_readme_benchmark_numbers_match_results() -> None:
+    import json
+
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    results = json.loads((ROOT / "bench" / "results.json").read_text(encoding="utf-8"))
+    total = results["totals"]["safe"]["saved_pct"]
+    median = results["median_saved_pct"]["safe"]
+    assert f"**{total:.1f}% in total, with a median of {median:.1f}% per tool set**" in readme
+    assert f"On {len(results['snapshots'])} tool sets ({results['total_tools']} tools" in readme
