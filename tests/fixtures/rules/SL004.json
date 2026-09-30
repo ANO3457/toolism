@@ -1,0 +1,124 @@
+[
+  {
+    "name": "single-use nested model is inlined, site description wins",
+    "tool": {"name": "t", "schema": {
+      "$defs": {"Address": {"type": "object", "title": "Address", "description": "A postal address", "properties": {"city": {"type": "string"}}, "required": ["city"]}},
+      "properties": {"home": {"$ref": "#/$defs/Address", "description": "Home address"}},
+      "required": ["home"],
+      "type": "object"
+    }},
+    "expected_schema": {
+      "properties": {"home": {"type": "object", "title": "Address", "properties": {"city": {"type": "string"}}, "required": ["city"], "description": "Home address"}},
+      "required": ["home"],
+      "type": "object"
+    }
+  },
+  {
+    "name": "multi-use definition is kept, unused one is deleted",
+    "tool": {"name": "t", "schema": {
+      "type": "object",
+      "properties": {"a": {"$ref": "#/$defs/P"}, "b": {"$ref": "#/$defs/P"}},
+      "required": ["a", "b"],
+      "$defs": {"P": {"type": "integer", "minimum": 0}, "Unused": {"type": "string"}}
+    }},
+    "expected_schema": {
+      "type": "object",
+      "properties": {"a": {"$ref": "#/$defs/P"}, "b": {"$ref": "#/$defs/P"}},
+      "required": ["a", "b"],
+      "$defs": {"P": {"type": "integer", "minimum": 0}}
+    }
+  },
+  {
+    "name": "chained single-use definitions inline to a fixpoint",
+    "tool": {"name": "t", "schema": {
+      "type": "object",
+      "properties": {"order": {"$ref": "#/$defs/Order"}},
+      "required": ["order"],
+      "$defs": {
+        "Order": {"type": "object", "properties": {"item": {"$ref": "#/$defs/Item"}}, "required": ["item"]},
+        "Item": {"type": "object", "properties": {"sku": {"type": "string"}}, "required": ["sku"]}
+      }
+    }},
+    "expected_schema": {
+      "type": "object",
+      "properties": {"order": {"type": "object", "properties": {"item": {"type": "object", "properties": {"sku": {"type": "string"}}, "required": ["sku"]}}, "required": ["item"]}},
+      "required": ["order"]
+    }
+  },
+  {
+    "name": "root $ref is inlined under 2020-12",
+    "tool": {"name": "t", "schema": {
+      "$ref": "#/$defs/Args",
+      "$defs": {"Args": {"type": "object", "properties": {"x": {"type": "string"}}, "required": ["x"]}}
+    }},
+    "expected_schema": {"type": "object", "properties": {"x": {"type": "string"}}, "required": ["x"]}
+  },
+  {
+    "name": "recursive definition is kept",
+    "verify": "skip-ok",
+    "tool": {"name": "t", "schema": {
+      "type": "object",
+      "properties": {"root": {"$ref": "#/$defs/Node"}},
+      "$defs": {"Node": {"type": "object", "properties": {"children": {"type": "array", "items": {"$ref": "#/$defs/Node"}}}}}
+    }}
+  },
+  {
+    "name": "draft-07 ref with siblings is not inlined",
+    "tool": {"name": "t", "schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {"a": {"$ref": "#/definitions/S", "maxLength": 2}},
+      "required": ["a"],
+      "definitions": {"S": {"type": "string"}}
+    }}
+  },
+  {
+    "name": "draft-07 ref without siblings is inlined",
+    "tool": {"name": "t", "schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {"a": {"$ref": "#/definitions/S"}},
+      "required": ["a"],
+      "definitions": {"S": {"type": "string", "maxLength": 2}}
+    }},
+    "expected_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {"a": {"type": "string", "maxLength": 2}},
+      "required": ["a"]
+    }
+  },
+  {
+    "name": "validation keyword collision is not inlined",
+    "tool": {"name": "t", "schema": {
+      "type": "object",
+      "properties": {"a": {"$ref": "#/$defs/S", "minLength": 1}},
+      "required": ["a"],
+      "$defs": {"S": {"type": "string", "minLength": 5}}
+    }}
+  },
+  {
+    "name": "other JSON pointers block inlining",
+    "tool": {"name": "t", "schema": {
+      "type": "object",
+      "properties": {"a": {"$ref": "#/$defs/S"}, "b": {"$ref": "#/properties/a"}},
+      "$defs": {"S": {"type": "string"}}
+    }}
+  },
+  {
+    "name": "pinned definition is kept",
+    "tool": {"name": "t", "schema": {
+      "type": "object",
+      "properties": {"a": {"$ref": "#/$defs/S"}, "b": {"$ref": "#/$defs/S/properties/x"}},
+      "$defs": {"S": {"type": "object", "properties": {"x": {"type": "string"}}}}
+    }}
+  },
+  {
+    "name": "nested $id disables the rule",
+    "tool": {"name": "t", "schema": {
+      "type": "object",
+      "properties": {"a": {"$ref": "#/$defs/S"}, "z": {"$id": "https://example.com/z", "type": "string"}},
+      "$defs": {"S": {"type": "string"}, "Unused": {}}
+    }}
+  }
+]

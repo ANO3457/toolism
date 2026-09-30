@@ -1,0 +1,21 @@
+{
+  "model": "claude-sonnet-5",
+  "max_tokens": 1024,
+  "tools": [
+    {
+      "name": "lookup_order",
+      "description": "Look up an order by id.\n\n    Returns status and items.\n",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "order_id": {"type": "string", "description": "The order ID."},
+          "include_items": {"type": "boolean", "default": false}
+        },
+        "required": ["order_id"]
+      },
+      "cache_control": {"type": "ephemeral"}
+    },
+    {"type": "web_search_20250305", "name": "web_search", "max_uses": 3}
+  ],
+  "messages": [{"role": "user", "content": "Where is order 42?"}]
+}

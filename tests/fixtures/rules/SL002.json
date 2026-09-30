@@ -1,0 +1,45 @@
+[
+  {
+    "name": "pydantic optional string",
+    "tool": {"name": "t", "schema": {
+      "type": "object",
+      "properties": {"unit": {"description": "Unit", "anyOf": [{"type": "string"}, {"type": "null"}], "default": null}}
+    }},
+    "expected_schema": {
+      "type": "object",
+      "properties": {"unit": {"description": "Unit", "type": ["string", "null"], "default": null}}
+    }
+  },
+  {
+    "name": "oneOf with disjoint types",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"x": {"oneOf": [{"type": "string"}, {"type": "null"}]}}, "required": ["x"]}},
+    "expected_schema": {"type": "object", "properties": {"x": {"type": ["string", "null"]}}, "required": ["x"]}
+  },
+  {
+    "name": "oneOf integer/number overlaps and is kept",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"x": {"oneOf": [{"type": "integer"}, {"type": "number"}]}}, "required": ["x"]}}
+  },
+  {
+    "name": "branch with other keywords is kept",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"x": {"anyOf": [{"type": "string", "maxLength": 3}, {"type": "null"}]}}}}
+  },
+  {
+    "name": "ref branch is kept",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"x": {"anyOf": [{"$ref": "#/$defs/A"}, {"type": "null"}]}}, "$defs": {"A": {"type": "object"}}}}
+  },
+  {
+    "name": "node with its own type is kept",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {"x": {"type": "string", "anyOf": [{"type": "string"}, {"type": "null"}]}}}}
+  },
+  {
+    "name": "single branch and nested type arrays",
+    "tool": {"name": "t", "schema": {"type": "object", "properties": {
+      "a": {"anyOf": [{"type": "integer"}]},
+      "b": {"anyOf": [{"type": ["string", "null"]}, {"type": "integer"}, {"type": "null"}]}
+    }, "required": ["a", "b"]}},
+    "expected_schema": {"type": "object", "properties": {
+      "a": {"type": "integer"},
+      "b": {"type": ["string", "null", "integer"]}
+    }, "required": ["a", "b"]}
+  }
+]

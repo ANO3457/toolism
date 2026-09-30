@@ -1,0 +1,6 @@
+{
+  "functions": [
+    {"name": "noop", "description": "Do nothing."},
+    {"name": "echo", "parameters": {"type": "object", "properties": {"text": {"type": "string"}}}}
+  ]
+}
