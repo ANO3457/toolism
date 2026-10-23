@@ -4,6 +4,9 @@ Thanks for helping make tool definitions cheaper. New rules, tokenizers, input f
 benchmark servers are all welcome, as are bug reports with a tool definition that toolism gets
 wrong.
 
+This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By taking
+part, you agree to uphold it.
+
 ## Development setup
 
 You need [uv](https://docs.astral.sh/uv/) and Python 3.10+.

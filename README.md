@@ -1,8 +1,9 @@
 # toolism
 
-[![CI](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml/badge.svg)](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](pyproject.toml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/toolism)](https://pypi.org/project/toolism/)
+[![Python versions](https://img.shields.io/pypi/pyversions/toolism)](https://pypi.org/project/toolism/)
+[![CI](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml?query=branch%3Amaster)
+[![License](https://img.shields.io/github/license/rakeshnitb23/toolism)](LICENSE)
 
 **Your agent pays for its tool definitions on every single request. toolism measures that cost
 and cuts it, without changing which tool calls are valid.**
@@ -249,7 +250,8 @@ across tokenizers: within about 2 percentage points in the [benchmark](bench/RES
 ## Contributing
 
 New rules, tokenizers and formats are welcome. A rule is one small module plus a fixture file;
-see [CONTRIBUTING.md](CONTRIBUTING.md) for the 3-step guide and a list of ideas.
+see [CONTRIBUTING.md](CONTRIBUTING.md) for the 3-step guide and a list of ideas. Everyone taking
+part is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
