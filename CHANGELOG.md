@@ -25,6 +25,13 @@ All notable changes to this project are documented here. The format follows
   rules responsible, reverts only those, and keeps the other rules' savings (re-verified).
   `Rollback` gains a `reverted` field, also in the JSON report.
 
+### Fixed
+
+- `--verify` no longer rewrites the schemas it checks. hypothesis-jsonschema resolves `$ref`s in
+  place, so with `--verify` the slimmed output could come back with `$ref`s expanded (more tokens
+  than the report showed), and the caller's input tool set was modified too. Verification now
+  works on copies; output is identical with and without `--verify`.
+
 ## [0.1.0] - 2026-10-23
 
 ### Added

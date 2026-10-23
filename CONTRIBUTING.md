@@ -7,6 +7,25 @@ wrong.
 This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By taking
 part, you agree to uphold it.
 
+## Picking an issue
+
+Issues come in two kinds, and they work differently:
+
+| Label | Who can take it | How |
+| --- | --- | --- |
+| [good first issue](https://github.com/rakeshnitb23/toolism/labels/good%20first%20issue) | People new to toolism (fewer than 2 merged PRs here) | Comment to ask, then **wait until a maintainer assigns it to you** before opening a PR |
+| [help wanted](https://github.com/rakeshnitb23/toolism/labels/help%20wanted) | Anyone | No assignment needed: comment with your plan, then open a draft PR early |
+
+- **One good first issue per person at a time.** Finish or drop it before asking for another.
+- **First to ask, first assigned.** If several people ask for the same good first issue, it
+  usually goes to whoever asked first.
+- **PRs for a good first issue that isn't assigned to you will be closed**, so that newcomers who
+  asked and waited aren't overtaken.
+- **Stuck or busy?** Say so on the issue; that's fine. If an assigned issue has no activity for
+  7 days, a maintainer may reassign it.
+- A bot replies with these rules when you ask, and notes it on a PR that links an issue it isn't
+  assigned to. It never closes anything itself; maintainers decide.
+
 ## Development setup
 
 You need [uv](https://docs.astral.sh/uv/) and Python 3.10+.
