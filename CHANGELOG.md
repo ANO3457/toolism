@@ -5,6 +5,7 @@ All notable changes to this project are documented here. The format follows
 [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+- Python 3.14 is now tested in CI and listed in the package classifiers.
 
 ### Added
 
@@ -13,6 +14,7 @@ All notable changes to this project are documented here. The format follows
   in the FAQ, and a Stability section defining the public API and the deprecation policy.
 - pre-commit hook `toolism-check` (`.pre-commit-hooks.yaml`), the same budget gate as
   `toolism check`, run before each commit.
+- Python 3.14 is now tested in CI and listed in the package classifiers.
 
 ### Changed
 
