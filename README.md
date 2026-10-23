@@ -150,8 +150,9 @@ Every rule is documented, with its exact conditions, in [docs/rules.md](docs/rul
   long descriptions). Validation is still unchanged; measure the effect on your own evals.
 - **`--verify`** (`toolism[verify]`) checks every changed schema in both directions. It proves
   equivalence when only annotations changed, and otherwise searches for a counterexample with
-  [hypothesis-jsonschema](https://github.com/python-jsonschema/hypothesis-jsonschema). Any tool
-  with a counterexample is rolled back to its original. In CI, every schema the default rules
+  [hypothesis-jsonschema](https://github.com/python-jsonschema/hypothesis-jsonschema). When a
+  tool has a counterexample, toolism finds the rules responsible and reverts only their changes;
+  if it can't single them out, the whole tool is restored to its original. In CI, every schema the default rules
   change in the [benchmark corpus](bench/) is checked this way.
 
 OpenAI `strict: true` tools are respected: anything strict mode requires (`required` listing every
