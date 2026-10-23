@@ -179,6 +179,9 @@ client.messages.create(model=..., tools=tools, messages=...)
 `slim_tools` is cached by input and returns fresh objects each call. See
 [examples/agent_startup.py](examples/agent_startup.py).
 
+To print the before/after token saving for a file of tools (offline, heuristic
+tokenizer), see [examples/measure_savings.py](examples/measure_savings.py).
+
 ## GitHub Action
 
 ```yaml
