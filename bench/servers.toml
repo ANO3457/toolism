@@ -1,4 +1,4 @@
-# MCP servers in the benchmark corpus. `python bench/collect.py` runs each one with toolslim's
+# MCP servers in the benchmark corpus. `python bench/collect.py` runs each one with toolism's
 # MCP loader and writes its tools/list result to bench/snapshots/<name>.json.
 #
 # Chosen to be representative, not flattering (design C14 review): the official reference

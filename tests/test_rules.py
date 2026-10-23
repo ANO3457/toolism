@@ -20,9 +20,9 @@ from typing import Any
 
 import pytest
 
-from toolslim.models import ToolDef
-from toolslim.rules import Safety, all_rules, get_rule, resolve_options
-from toolslim.verify import Verdict, check_equivalence, verify_available
+from toolism.models import ToolDef
+from toolism.rules import Safety, all_rules, get_rule, resolve_options
+from toolism.verify import Verdict, check_equivalence, verify_available
 
 FIXTURES = Path(__file__).parent / "fixtures" / "rules"
 
@@ -118,7 +118,7 @@ def test_stable_order_sorts_and_is_noop_when_sorted() -> None:
 
 
 def test_sl101_rejects_nonsense_limit() -> None:
-    from toolslim.errors import RuleError
+    from toolism.errors import RuleError
 
     rule_cls = get_rule("SL101")
     tool = ToolDef(name="t", description="x" * 50, input_schema={"type": "object"})
@@ -127,7 +127,7 @@ def test_sl101_rejects_nonsense_limit() -> None:
 
 
 def test_sl101_truncate_without_spaces() -> None:
-    from toolslim.rules.sl101_max_description_length import truncate
+    from toolism.rules.sl101_max_description_length import truncate
 
     assert truncate("x" * 10, 5) == "xxxx…"
     assert len(truncate("word " * 40, 37)) <= 37

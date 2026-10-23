@@ -13,12 +13,12 @@ def load_mcp_stdio(command: str | Sequence[str], *, env: Mapping[str, str] | Non
 
 ## Behaviour
 
-1. Lazy-import `mcp`. If it's missing → `MissingExtraError("pip install 'toolslim[mcp]'")`.
+1. Lazy-import `mcp`. If it's missing → `MissingExtraError("pip install 'toolism[mcp]'")`.
 2. `StdioServerParameters(command=argv[0], args=argv[1:], env=env merged over os.environ, cwd=cwd)`.
 3. `stdio_client` → `ClientSession` → `initialize()` → page through `list_tools(cursor)` until `nextCursor` is empty. Hard cap 100 pages.
 4. Each tool → `tool.model_dump(by_alias=True, exclude_none=True, mode="json")`. This preserves `inputSchema`, `outputSchema`, `annotations`, `title` and `_meta`.
 5. Return `parse({"tools": [...]})` → MCP-format ToolSet.
-6. The whole exchange runs under `anyio.fail_after(timeout)`. Any failure → `LoaderError("MCP server '<cmd>' failed: …")`, with the server's stderr suppressed unless `TOOLSLIM_DEBUG`.
+6. The whole exchange runs under `anyio.fail_after(timeout)`. Any failure → `LoaderError("MCP server '<cmd>' failed: …")`, with the server's stderr suppressed unless `TOOLISM_DEBUG`.
 
 ## Tests
 

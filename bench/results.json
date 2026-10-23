@@ -1,7 +1,7 @@
 {
-  "toolslim_report": 1,
+  "toolism_report": 1,
   "kind": "benchmark",
-  "toolslim_version": "0.1.0.dev0",
+  "toolism_version": "0.1.0.dev0",
   "date": "2026-10-15",
   "command": "uv run python bench/run.py",
   "tokenizers": [

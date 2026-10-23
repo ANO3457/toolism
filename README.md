@@ -1,17 +1,17 @@
-# toolslim
+# toolism
 
 [![CI](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml/badge.svg)](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-**Your agent pays for its tool definitions on every single request. toolslim measures that cost
+**Your agent pays for its tool definitions on every single request. toolism measures that cost
 and cuts it, without changing which tool calls are valid.**
 
 Every tool you give an LLM (OpenAI function, Anthropic tool, MCP server tool) is sent as JSON
 Schema with every request. Schema generators such as Pydantic, FastMCP, zod-to-json-schema and
 OpenAPI converters pad that JSON with things the model already knows: titles that repeat the
 property name, `anyOf` wrappers for optional fields, `default: null`, `$schema` URIs, unused
-`$defs`. toolslim removes exactly that, proves or tests that the result accepts the same tool
+`$defs`. toolism removes exactly that, proves or tests that the result accepts the same tool
 calls, and gives you a CI gate so the cost can't creep back up.
 
 On 14 tool sets (159 tools from 13 popular MCP servers, including the official reference servers,
@@ -25,20 +25,20 @@ too.
 ## Install
 
 ```bash
-pip install toolslim                 # CLI + Python API
-pip install "toolslim[verify]"       # + equivalence verification (hypothesis-jsonschema)
-pip install "toolslim[mcp]"          # + read tools straight from an MCP server
-pip install "toolslim[all]"          # everything, incl. Anthropic's exact token counter
+pip install toolism                 # CLI + Python API
+pip install "toolism[verify]"       # + equivalence verification (hypothesis-jsonschema)
+pip install "toolism[mcp]"          # + read tools straight from an MCP server
+pip install "toolism[all]"          # everything, incl. Anthropic's exact token counter
 ```
 
-> Not on PyPI yet? Use `pip install "toolslim[all] @ git+https://github.com/rakeshnitb23/toolism"`.
+> Not on PyPI yet? Use `pip install "toolism[all] @ git+https://github.com/rakeshnitb23/toolism"`.
 
 ## 30-second tour
 
 **Measure** what your tools cost (OpenAI, Anthropic and MCP JSON are detected automatically):
 
 ```console
-$ toolslim measure examples/mcp_tools.json
+$ toolism measure examples/mcp_tools.json
 Tool definition tokens
 ┏━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━┓
 ┃ Tool            ┃ Tokens ┃ % of total ┃
@@ -54,7 +54,7 @@ Tool definition tokens
 goes to stderr:
 
 ```console
-$ toolslim slim examples/mcp_tools.json -o tools.slim.json
+$ toolism slim examples/mcp_tools.json -o tools.slim.json
 Slimmed 3 tools: 708 → 463 tokens (−245, −34.6%) — tiktoken:o200k_base (approximate), level safe
 Savings by rule
 ┏━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓
@@ -72,17 +72,17 @@ Savings by rule
 Point it at a live MCP server instead of a file with `--mcp`:
 
 ```console
-$ toolslim measure --mcp "npx -y @modelcontextprotocol/server-github"
+$ toolism measure --mcp "npx -y @modelcontextprotocol/server-github"
 ```
 
 **Gate** it in CI against a committed baseline:
 
 ```console
-$ toolslim check tools.json -b .toolslim/baseline.json --update-baseline   # once, then commit it
-Wrote .toolslim/baseline.json: 463 tokens across 3 tools (tiktoken:o200k_base).
+$ toolism check tools.json -b .toolism/baseline.json --update-baseline   # once, then commit it
+Wrote .toolism/baseline.json: 463 tokens across 3 tools (tiktoken:o200k_base).
 
-$ toolslim check tools.json -b .toolslim/baseline.json --max-increase 5%   # in CI
-toolslim check FAILED
+$ toolism check tools.json -b .toolism/baseline.json --max-increase 5%   # in CI
+toolism check FAILED
 Total: 708 tokens across 3 tools (baseline 463, +245, +52.9%) — tiktoken:o200k_base (approximate)
   ✗ total grew by 245 tokens (+52.9%), over the allowed 5%
 Changed tools
@@ -115,7 +115,7 @@ Before, as the MCP Python SDK generates it:
 "title": "log_activityArguments"
 ```
 
-After `toolslim slim`, which accepts exactly the same arguments:
+After `toolism slim`, which accepts exactly the same arguments:
 
 ```json
 "occurred_on": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}]},
@@ -137,7 +137,7 @@ After `toolslim slim`, which accepts exactly the same arguments:
 | SL102 `drop-examples` | `examples` / `example` | `--level annotations` |
 
 Every rule is documented, with its exact conditions, in [docs/rules.md](docs/rules.md)
-(`toolslim rules` lists them too).
+(`toolism rules` lists them too).
 
 ### Safety levels and verification
 
@@ -146,7 +146,7 @@ Every rule is documented, with its exact conditions, in [docs/rules.md](docs/rul
   already has.
 - **`--level annotations`**: also drops annotation text that might help the model (examples,
   long descriptions). Validation is still unchanged; measure the effect on your own evals.
-- **`--verify`** (`toolslim[verify]`) checks every changed schema in both directions. It proves
+- **`--verify`** (`toolism[verify]`) checks every changed schema in both directions. It proves
   equivalence when only annotations changed, and otherwise searches for a counterexample with
   [hypothesis-jsonschema](https://github.com/python-jsonschema/hypothesis-jsonschema). Any tool
   with a counterexample is rolled back to its original. In CI, every schema the default rules
@@ -158,20 +158,20 @@ property, `additionalProperties: false`) is left alone.
 ## Python API
 
 ```python
-import toolslim
+import toolism
 
-toolset = toolslim.load("tools.json")  # or toolslim.parse(list_of_dicts)
-print(toolslim.measure(toolset).total)
+toolset = toolism.load("tools.json")  # or toolism.parse(list_of_dicts)
+print(toolism.measure(toolset).total)
 
-result = toolslim.slim(toolset, level="safe", verify=True)
+result = toolism.slim(toolset, level="safe", verify=True)
 print(result.report.saved, result.report.saved_pct)
-toolslim.dump(result.toolset, "tools.slim.json")  # same format and envelope as the input
+toolism.dump(result.toolset, "tools.slim.json")  # same format and envelope as the input
 ```
 
 In an agent, slim once and send the slim tools with every request:
 
 ```python
-tools = toolslim.slim_tools(my_tools)  # same shape back (OpenAI, Anthropic or MCP dicts)
+tools = toolism.slim_tools(my_tools)  # same shape back (OpenAI, Anthropic or MCP dicts)
 client.messages.create(model=..., tools=tools, messages=...)
 ```
 
@@ -188,11 +188,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: toolslim
+      - id: toolism
         uses: rakeshnitb23/toolism@v0.1.0
         with:
           source: tools.json                  # or: mcp: "npx -y @your/mcp-server"
-          baseline: .toolslim/baseline.json
+          baseline: .toolism/baseline.json
           max-increase: 5%
 ```
 
@@ -203,7 +203,7 @@ The result is added to the job summary. Outputs: `status` (`pass`/`fail`/`error`
       - uses: marocchino/sticky-pull-request-comment@v2
         if: always()
         with:
-          path: ${{ steps.toolslim.outputs.summary-file }}
+          path: ${{ steps.toolism.outputs.summary-file }}
 ```
 
 ## Token counts
@@ -216,18 +216,18 @@ The result is added to the job summary. Outputs: `status` (`pass`/`fail`/`error`
 
 Counts are taken on a provider-neutral rendering of each tool. Providers wrap tools in their own
 prompt format, which adds overhead per tool that no schema change can remove. Reports always name
-the tokenizer and say whether the count is approximate. Set a default with `TOOLSLIM_TOKENIZER`.
+the tokenizer and say whether the count is approximate. Set a default with `TOOLISM_TOKENIZER`.
 
 ## How it differs
 
 - **Prompt and context compressors** (for example LLMLingua or Headroom) shrink messages, documents
-  and tool *results* at runtime, often with a model in the loop. toolslim works on tool
+  and tool *results* at runtime, often with a model in the loop. toolism works on tool
   *definitions*, is deterministic, and keeps validation identical. The two approaches complement
   each other.
 - **Gateways and proxies** (for example LiteLLM) route requests and track cost; they send your
-  schemas as they are. toolslim makes those schemas smaller before they leave.
+  schemas as they are. toolism makes those schemas smaller before they leave.
 - **Loading fewer tools** (tool search or dynamic selection) cuts the number of tools sent;
-  toolslim cuts the cost of each tool you do send.
+  toolism cuts the cost of each tool you do send.
 
 ## FAQ
 

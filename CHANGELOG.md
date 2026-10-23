@@ -8,18 +8,18 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
-- `toolslim measure`: token cost of every tool in OpenAI (Chat and Responses), Anthropic or MCP
+- `toolism measure`: token cost of every tool in OpenAI (Chat and Responses), Anthropic or MCP
   tool JSON, or of a live stdio MCP server (`--mcp`), as a table, Markdown or JSON.
-- `toolslim slim`: validation-equivalent rewriting with nine safe rules (SL001–SL009) and two
+- `toolism slim`: validation-equivalent rewriting with nine safe rules (SL001–SL009) and two
   lossy annotation rules (SL101, SL102, `--level annotations`). The output keeps the input's
   format and envelope; per-rule and per-tool savings go to stderr.
 - `--verify`: bidirectional equivalence checking of every changed schema. Annotation-only changes
   are proved; other changes are searched for counterexamples with hypothesis-jsonschema, and any
   tool with one is rolled back.
-- `toolslim check`: CI gate against a committed baseline with growth budgets
+- `toolism check`: CI gate against a committed baseline with growth budgets
   (`--max-increase 10%` and/or tokens), `--max-total` and `--max-tool`. Writes a Markdown summary
   to `$GITHUB_STEP_SUMMARY`.
-- `toolslim rules`: the rule catalogue as a table, JSON, or the generated `docs/rules.md`.
+- `toolism rules`: the rule catalogue as a table, JSON, or the generated `docs/rules.md`.
 - Tokenizers: offline `heuristic`, `tiktoken:<encoding>` (default `o200k_base`) and exact
   `anthropic:<model>` via the `count_tokens` API.
 - Python API: `load`, `parse`, `measure`, `slim`, `dump`, `slim_tools` (cached, for agent

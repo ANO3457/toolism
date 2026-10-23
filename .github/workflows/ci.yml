@@ -85,17 +85,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: toolslim
+      - id: toolism
         uses: ./
         with:
           source: bench/snapshots/fastmcp-pydantic.json
-          baseline: .toolslim/baseline.json
+          baseline: .toolism/baseline.json
           max-increase: "5%"
       - name: Check the action's outputs
         env:
-          STATUS: ${{ steps.toolslim.outputs.status }}
-          TOTAL: ${{ steps.toolslim.outputs.total }}
-          DELTA: ${{ steps.toolslim.outputs.delta }}
+          STATUS: ${{ steps.toolism.outputs.status }}
+          TOTAL: ${{ steps.toolism.outputs.total }}
+          DELTA: ${{ steps.toolism.outputs.delta }}
         run: |
           echo "status=$STATUS total=$TOTAL delta=$DELTA"
           test "$STATUS" = pass

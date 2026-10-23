@@ -3,7 +3,7 @@ requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
 [project]
-name = "toolslim"
+name = "toolism"
 dynamic = ["version"]
 description = "Measure and safely slim the token cost of LLM tool and MCP schemas."
 readme = "README.md"
@@ -37,10 +37,10 @@ dependencies = [
 verify = ["hypothesis>=6.100", "hypothesis-jsonschema>=0.23", "jsonschema>=4.21"]
 mcp = ["mcp>=1.2"]
 anthropic = ["anthropic>=0.40"]
-all = ["toolslim[verify,mcp,anthropic]"]
+all = ["toolism[verify,mcp,anthropic]"]
 
 [project.scripts]
-toolslim = "toolslim.cli:main"
+toolism = "toolism.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/rakeshnitb23/toolism"
@@ -50,7 +50,7 @@ Changelog = "https://github.com/rakeshnitb23/toolism/blob/master/CHANGELOG.md"
 
 [dependency-groups]
 dev = [
-  "toolslim[all]",
+  "toolism[all]",
   "pytest>=8",
   "pytest-cov>=5",
   "pytest-github-actions-annotate-failures>=0.2",
@@ -60,13 +60,13 @@ dev = [
 ]
 
 [tool.hatch.version]
-path = "src/toolslim/__about__.py"
+path = "src/toolism/__about__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/toolslim"]
+packages = ["src/toolism"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/toolslim", "tests", "README.md", "LICENSE", "CHANGELOG.md", "action.yml"]
+include = ["src/toolism", "tests", "README.md", "LICENSE", "CHANGELOG.md", "action.yml"]
 
 # ---------------------------------------------------------------- ruff
 [tool.ruff]
@@ -85,13 +85,13 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["toolslim"]
+known-first-party = ["toolism"]
 
 # ---------------------------------------------------------------- mypy
 [tool.mypy]
 python_version = "3.10"
 strict = true
-files = ["src/toolslim"]
+files = ["src/toolism"]
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
@@ -107,10 +107,10 @@ markers = [
   "mcp: needs the mcp extra and spawns a local MCP server",
   "slow: slow test",
 ]
-filterwarnings = ["error::DeprecationWarning:toolslim.*"]
+filterwarnings = ["error::DeprecationWarning:toolism.*"]
 
 [tool.coverage.run]
-source = ["toolslim"]
+source = ["toolism"]
 branch = true
 
 [tool.coverage.report]

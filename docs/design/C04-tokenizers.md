@@ -24,7 +24,7 @@ class TiktokenTokenizer(TextTokenizer)       # name f"tiktoken:{encoding}"; lazy
 class AnthropicTokenizer                     # name f"anthropic:{model}"; extra "anthropic"
 
 def get_tokenizer(spec: str | Tokenizer | None = None) -> Tokenizer
-DEFAULT_TOKENIZER = "tiktoken:o200k_base"; ENV_VAR = "TOOLSLIM_TOKENIZER"
+DEFAULT_TOKENIZER = "tiktoken:o200k_base"; ENV_VAR = "TOOLISM_TOKENIZER"
 ```
 
 ## Behaviour & edge cases
@@ -50,7 +50,7 @@ DEFAULT_TOKENIZER = "tiktoken:o200k_base"; ENV_VAR = "TOOLSLIM_TOKENIZER"
 - The client is injectable for tests (`client=` with a `.messages.count_tokens` method).
 
 **`get_tokenizer`:**
-- `None` → the `TOOLSLIM_TOKENIZER` env var, otherwise the default.
+- `None` → the `TOOLISM_TOKENIZER` env var, otherwise the default.
 - Unknown prefix → `TokenizerError` listing the valid forms.
 - A tokenizer instance is passed through unchanged.
 
@@ -65,7 +65,7 @@ DEFAULT_TOKENIZER = "tiktoken:o200k_base"; ENV_VAR = "TOOLSLIM_TOKENIZER"
 
 | Issue | Change |
 |---|---|
-| Summing per-tool renders ignores the per-tool framing tokens providers add, so totals are slightly low. | Accepted and documented. Totals from local tokenizers are labelled approximate. Relative savings — the thing toolslim optimizes — are unaffected because framing is constant per tool. |
+| Summing per-tool renders ignores the per-tool framing tokens providers add, so totals are slightly low. | Accepted and documented. Totals from local tokenizers are labelled approximate. Relative savings — the thing toolism optimizes — are unaffected because framing is constant per tool. |
 | The original Anthropic `count_tool` design subtracted a no-tools baseline. That counts the ~300-token preamble against every tool and inflates per-tool numbers. | Changed to marginal cost against a minimal `PROBE` tool. |
 | An unbounded cache could grow without limit in a long-running agent process. | Bounded dict (4,096 entries, FIFO eviction). |
 | Should the heuristic try to imitate o200k closely? | No over-fitting. A simple, explained rule plus a published error figure is more honest. |

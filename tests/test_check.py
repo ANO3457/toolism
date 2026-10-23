@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from toolslim.check import (
+from toolism.check import (
     Baseline,
     Budget,
     baseline_from_report,
@@ -15,8 +15,8 @@ from toolslim.check import (
     run_check,
     save_baseline,
 )
-from toolslim.errors import BaselineError
-from toolslim.measurement import TokenReport, ToolCount
+from toolism.errors import BaselineError
+from toolism.measurement import TokenReport, ToolCount
 
 
 def report(total: int, **tools: int) -> TokenReport:
@@ -30,7 +30,7 @@ def report(total: int, **tools: int) -> TokenReport:
     )
 
 
-BASE = Baseline(tokenizer="heuristic", total=1000, tools={"a": 600, "b": 400}, toolslim_version="x")
+BASE = Baseline(tokenizer="heuristic", total=1000, tools={"a": 600, "b": 400}, toolism_version="x")
 
 
 # -------------------------------------------------------------------- budgets
@@ -68,7 +68,7 @@ def test_absolute_allowance_is_a_floor_for_percentages() -> None:
     # 25% growth is over 10% but within the 300-token floor
     assert run_check(report(1250, a=850, b=400), BASE, both).ok
     # on a large baseline the percentage is the larger allowance
-    big = Baseline(tokenizer="heuristic", total=10_000, tools={"a": 10_000}, toolslim_version="x")
+    big = Baseline(tokenizer="heuristic", total=10_000, tools={"a": 10_000}, toolism_version="x")
     assert run_check(report(11_000, a=11_000), big, both).ok
     result = run_check(report(1301, a=901, b=400), BASE, both)
     assert result.violations == (
@@ -96,7 +96,7 @@ def test_caps_work_without_baseline_and_collect_all_violations() -> None:
 
 
 def test_zero_baseline_pct_growth() -> None:
-    empty = Baseline(tokenizer="heuristic", total=0, tools={}, toolslim_version="x")
+    empty = Baseline(tokenizer="heuristic", total=0, tools={}, toolism_version="x")
     result = run_check(report(5, a=5), empty, Budget(max_increase_pct=10))
     assert result.violations == ("total grew by 5 tokens (new), over the allowed 10%",)
 
@@ -130,10 +130,10 @@ def test_tokenizer_mismatch() -> None:
 
 
 def test_save_and_load_round_trip(tmp_path: Path) -> None:
-    path = tmp_path / ".toolslim" / "baseline.json"
+    path = tmp_path / ".toolism" / "baseline.json"
     saved = save_baseline(path, report(1000, b=400, a=600))
     data = json.loads(path.read_text(encoding="utf-8"))
-    assert data["toolslim_baseline"] == 1
+    assert data["toolism_baseline"] == 1
     assert list(data["tools"]) == ["a", "b"]  # sorted for stable diffs
     loaded = load_baseline(path)
     assert loaded == saved
@@ -157,10 +157,10 @@ def test_duplicate_tool_names_are_summed() -> None:
     [
         (None, "baseline not found"),
         ("{not json", "cannot read baseline"),
-        ('{"toolslim_baseline": 2}', "is not a toolslim baseline"),
-        ('{"toolslim_baseline": 1, "tools": [], "total_tokens": 1, "tokenizer": "x"}', "malformed"),
+        ('{"toolism_baseline": 2}', "is not a toolism baseline"),
+        ('{"toolism_baseline": 1, "tools": [], "total_tokens": 1, "tokenizer": "x"}', "malformed"),
         (
-            '{"toolslim_baseline": 1, "tools": {"a": "1"}, "total_tokens": 1, "tokenizer": "x"}',
+            '{"toolism_baseline": 1, "tools": {"a": "1"}, "total_tokens": 1, "tokenizer": "x"}',
             "malformed",
         ),
     ],
@@ -179,12 +179,12 @@ def test_load_baseline_errors(tmp_path: Path, content: str | None, message: str)
 def test_render_check_formats() -> None:
     failed = run_check(report(1200, a=800, b=400), BASE, Budget(max_increase_pct=10))
     md = render_check(failed, "markdown")
-    assert md.startswith("### ❌ toolslim — tool token budget failed")
+    assert md.startswith("### ❌ toolism — tool token budget failed")
     assert "**Violations**" in md
     assert "| `a` | 600 | 800 | +200 |" in md
     assert "(baseline 1,000, +200, +20.0%)" in md
     table = render_check(failed, "table")
-    assert "toolslim check FAILED" in table
+    assert "toolism check FAILED" in table
     assert "✗ total grew by 200 tokens" in table
     data = json.loads(render_check(failed, "json"))
     assert data["ok"] is False
@@ -192,6 +192,6 @@ def test_render_check_formats() -> None:
     assert data["tools"][0] == {"name": "a", "before": 600, "after": 800, "change": 200}
 
     passed = run_check(report(1000, a=600, b=400), BASE, Budget(max_increase_pct=10))
-    assert render_check(passed, "markdown").startswith("### ✅ toolslim — tool token budget passed")
+    assert render_check(passed, "markdown").startswith("### ✅ toolism — tool token budget passed")
     assert "Changed tools" not in render_check(passed, "table")
     assert "\x1b[" in render_check(passed, "table", color=True)

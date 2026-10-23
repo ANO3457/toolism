@@ -1,4 +1,4 @@
-# toolslim — Architecture
+# toolism — Architecture
 
 Status: **v0.1 plan — reviewed** · Review: [ARCHITECTURE_REVIEW.md](ARCHITECTURE_REVIEW.md) (applied in section 13)
 
@@ -49,7 +49,7 @@ Teams measure this with hand-written scripts. Nobody ships a reusable tool that 
 ## 4. Component map
 
 ```
-                                ┌───────────────────────── toolslim (library) ─────────────────────────┐
+                                ┌───────────────────────── toolism (library) ─────────────────────────┐
                                 │                                                                      │
  tools.json / stdin ──► io ──►  │  formats (detect · parse · serialize)                                │
  MCP server (stdio) ──► loaders │        │                                                             │
@@ -100,9 +100,9 @@ models, errors         (bottom: no internal deps)
 | C8 | Verify | `verify.py` | Bidirectional property-based equivalence; deterministic; reports `equivalent / counterexample / skipped` |
 | C9 | Measure & report | `measure.py`, `report.py` | `TokenReport`, `SlimReport`; renderers: rich table, JSON (versioned), Markdown |
 | C10 | Check | `check.py` | Baseline file, budgets, comparison → `CheckResult`, exit codes |
-| C11 | CLI | `cli.py` | `toolslim measure / slim / check / rules` |
+| C11 | CLI | `cli.py` | `toolism measure / slim / check / rules` |
 | C12 | MCP loader | `loaders/mcp.py` | Launch an MCP server over stdio and page through `tools/list` (extra: `mcp`) |
-| C13 | GitHub Action & CI | `action.yml`, `.github/workflows/*` | Composite Action wrapping `toolslim check`; CI matrix; release via PyPI trusted publishing |
+| C13 | GitHub Action & CI | `action.yml`, `.github/workflows/*` | Composite Action wrapping `toolism check`; CI matrix; release via PyPI trusted publishing |
 | C14 | Benchmark | `bench/` | Snapshots of public MCP servers + Pydantic-style schemas; results across tokenizers |
 | C15 | Docs | `README.md`, `CONTRIBUTING.md`, `docs/` | Quickstart, rule catalogue, contributor guide |
 
@@ -157,30 +157,30 @@ Tokens are counted on a provider-neutral rendering of each tool: compact JSON of
 ## 9. Public API (stable surface for v0.1)
 
 ```python
-import toolslim
+import toolism
 
-ts = toolslim.load("tools.json")                    # or toolslim.parse(list_of_dicts)
-report = toolslim.measure(ts, tokenizer="tiktoken:o200k_base")
-result = toolslim.slim(ts, level="safe", verify=False, tokenizer="heuristic")
+ts = toolism.load("tools.json")                    # or toolism.parse(list_of_dicts)
+report = toolism.measure(ts, tokenizer="tiktoken:o200k_base")
+result = toolism.slim(ts, level="safe", verify=False, tokenizer="heuristic")
 result.toolset          # slimmed ToolSet
 result.report           # SlimReport: before/after, per-rule, per-tool
-toolslim.dump(result.toolset)                       # same format/envelope as the input
-toolslim.slim_tools(list_of_dicts) -> list[dict]    # one-liner for agent code
-toolslim.list_rules()
+toolism.dump(result.toolset)                       # same format/envelope as the input
+toolism.slim_tools(list_of_dicts) -> list[dict]    # one-liner for agent code
+toolism.list_rules()
 ```
 
-Everything else is internal (`toolslim._...` or not re-exported).
+Everything else is internal (`toolism._...` or not re-exported).
 
 ## 10. CLI
 
 ```
-toolslim measure SOURCE [--tokenizer T] [--format table|json|markdown] [-o FILE]
-toolslim slim    SOURCE [-o FILE] [--level safe|annotations] [--enable ID]... [--disable ID]...
+toolism measure SOURCE [--tokenizer T] [--format table|json|markdown] [-o FILE]
+toolism slim    SOURCE [-o FILE] [--level safe|annotations] [--enable ID]... [--disable ID]...
                         [--option ID.key=value]... [--verify [--verify-examples N] [--fail-on-rollback]]
                         [--tokenizer T] [--report table|json|markdown]
-toolslim check   SOURCE --baseline FILE [--max-increase 10%|500] [--max-total N] [--max-tool N]
+toolism check   SOURCE --baseline FILE [--max-increase 10%|500] [--max-total N] [--max-tool N]
                         [--update-baseline] [--tokenizer T] [--summary-md FILE]
-toolslim rules   [--format table|json]
+toolism rules   [--format table|json]
 ```
 
 - `SOURCE` is a JSON file, `-` for stdin, or `--mcp "<command>"` for a live stdio server.
@@ -216,7 +216,7 @@ See [ARCHITECTURE_REVIEW.md](ARCHITECTURE_REVIEW.md) for the reasoning behind ea
 - **Dialect** — `$schema` decides `$ref`-sibling semantics. SL004 is conservative under draft ≤ 7 and skips tools using `$id`, `$anchor`, `$dynamicRef` or `$recursiveRef`. The verifier uses the same dialect. (R2)
 - **Strict mode** — `RuleContext.strict` for OpenAI `strict: true` tools. Rules touching `required` or `additionalProperties` don't apply to them. (R3)
 - **Fixpoint** — passes repeat until nothing changes, max 3, with a warning if the cap is hit. (R4)
-- **Tokenizer honesty** — tokenizer name and approximate flag on every report and baseline. Default overridable with `TOOLSLIM_TOKENIZER`. No silent fallback; exit 3. `check` rejects a tokenizer mismatch unless `--allow-tokenizer-change`. (R5, R6)
+- **Tokenizer honesty** — tokenizer name and approximate flag on every report and baseline. Default overridable with `TOOLISM_TOKENIZER`. No silent fallback; exit 3. `check` rejects a tokenizer mismatch unless `--allow-tokenizer-change`. (R5, R6)
 - **Verification** — runs only on changed tools; 50 examples by default; deterministic; `skipped` is reported, never treated as a pass. (R7)
 - **Rollback** — on a counterexample, the whole tool is restored. `slim --fail-on-rollback` exits 1. This replaces the `--strict-verify` flag from section 10. (R8)
 - **Inputs are never mutated** — asserted with `ToolDef.fingerprint()`. (R9)
@@ -227,7 +227,7 @@ See [ARCHITECTURE_REVIEW.md](ARCHITECTURE_REVIEW.md) for the reasoning behind ea
 
 ## 14. Security and privacy
 
-- toolslim makes **no network calls** of its own, except when the user picks `anthropic:*` (sends definitions to Anthropic) or `--mcp` (runs a local command they supplied, which may itself use the network, e.g. `npx`).
+- toolism makes **no network calls** of its own, except when the user picks `anthropic:*` (sends definitions to Anthropic) or `--mcp` (runs a local command they supplied, which may itself use the network, e.g. `npx`).
 - The default `tiktoken:*` tokenizers download their vocabulary file once, on first use, and cache it (`TIKTOKEN_CACHE_DIR`). Tool definitions never leave the machine. Fully offline: `-t heuristic`.
 - `bench/servers.toml` runs commands. It's a developer tool, never read by the library or CLI.
 
@@ -242,10 +242,10 @@ The build followed the component designs. Where the implementation deviates, the
 | C6 | Lossy rules (SL101, SL102) are enabled by `--level annotations` instead of being default-off. | With default-off, `--level annotations` would have added nothing. |
 | C7 | Reordering rules (SL007) run after verification and rollback, on the final tools. | Verification compares tools pairwise; reordering first would pair the wrong tools. |
 | C8 | Results carry `method` (`identical` / `annotations-only` / `sampled`); annotation-only changes are proved, not sampled. Generation follows the validator's dialect (draft ≤ 7 drops `$ref` siblings). | Faster and stronger. The dialect fix closed a real blind spot found by tests. |
-| C9 | Uses `rich` for terminal tables. The module is `toolslim.measurement`; the public function stays `toolslim.measure`. | A submodule named `measure` would shadow the lazily exported function as soon as it was imported. |
+| C9 | Uses `rich` for terminal tables. The module is `toolism.measurement`; the public function stays `toolism.measure`. | A submodule named `measure` would shadow the lazily exported function as soon as it was imported. |
 | C10 | With both `--max-increase N%` and `N`, the larger allowance wins (the absolute value is a floor). A baseline with no allowance means "no growth". Duplicate tool names are summed with a note. | Matches the review's intent for small tool sets; a check that always passes would be useless. |
 | C11 | Usage errors go through the same `error:`/`hint:` handler (exit 2) instead of click's. Added `--quiet`, `--mcp-timeout`, `-l`. stdout/stderr are switched to UTF-8. `rules --format markdown` generates `docs/rules.md`, replacing `scripts/gen_rules_doc.py`. | Typer may vendor click, so click's exception classes aren't reliable. Windows pipes default to cp1252. |
 | C12 | Supports `mcp` SDK 1.x and 2.x by feature detection. Server stderr is captured and its tail becomes the error hint. Adds an async variant. Strips quotes from Windows-style command splits. | SDK 2.x renamed APIs; a failing server's own message is the most useful hint. |
-| C13 | Action logic lives in `toolslim._action` (stdlib only, tested) and inputs arrive only via `INPUT_*` env vars. Added a `summary-file` output. | No shell interpolation of user input; testable; enables the sticky-comment snippet. |
+| C13 | Action logic lives in `toolism._action` (stdlib only, tested) and inputs arrive only via `INPUT_*` env vars. Added a `summary-file` output. | No shell interpolation of user input; testable; enables the sticky-comment snippet. |
 | C14 | 13 pinned servers plus one generated Pydantic server. The heuristic was not recalibrated: its error vs o200k on the corpus is 3.2%. The equivalence sweep is marked `slow` and runs as its own CI job. | Accuracy was already good; the sweep takes ~3 minutes. |
 | C15 | README numbers are asserted by `tests/test_examples.py` against `bench/results.json` and live runs. | Docs can't drift from measured numbers. |

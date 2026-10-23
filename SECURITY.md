@@ -13,7 +13,7 @@ Only the latest release receives security fixes.
 
 ## Trust model
 
-- **Tool definition files are data.** toolslim parses them as JSON and never executes or evaluates
+- **Tool definition files are data.** toolism parses them as JSON and never executes or evaluates
   anything in them. Malformed or hostile input should produce an error, never code execution. If
   you find otherwise, that is a vulnerability.
 - **`--mcp COMMAND` runs that command**, exactly like typing it in your shell. The server process

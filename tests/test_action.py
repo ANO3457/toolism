@@ -1,4 +1,4 @@
-"""The GitHub Action entry point (``toolslim._action``) and ``action.yml`` wiring."""
+"""The GitHub Action entry point (``toolism._action``) and ``action.yml`` wiring."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from toolslim import _action
+from toolism import _action
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tests" / "fixtures" / "formats" / "mcp_tools.json"
@@ -31,7 +31,7 @@ def outputs(tmp_path: Path) -> dict[str, str]:
 def test_build_args(tmp_path: Path) -> None:
     env = {
         "INPUT_SOURCE": "tools.json",
-        "INPUT_BASELINE": ".toolslim/baseline.json",
+        "INPUT_BASELINE": ".toolism/baseline.json",
         "INPUT_MAX_INCREASE": "10%, 500",
         "INPUT_MAX_TOOL": "800",
         "INPUT_TOKENIZER": "heuristic",
@@ -41,7 +41,7 @@ def test_build_args(tmp_path: Path) -> None:
         "check",
         "tools.json",
         "--baseline",
-        ".toolslim/baseline.json",
+        ".toolism/baseline.json",
         "--max-increase",
         "10%",
         "--max-increase",
@@ -54,9 +54,9 @@ def test_build_args(tmp_path: Path) -> None:
         "--format",
         "json",
         "--output",
-        str(tmp_path / "toolslim.json"),
+        str(tmp_path / "toolism.json"),
         "--summary-md",
-        str(tmp_path / "toolslim.md"),
+        str(tmp_path / "toolism.md"),
     ]
 
 
@@ -85,7 +85,7 @@ def test_source_xor_mcp(inputs: dict[str, str]) -> None:
 def test_bad_inputs_report_error(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert _action.main(env_for(tmp_path)) == 2
     assert outputs(tmp_path)["status"] == "error"
-    assert "::error title=toolslim::set exactly one" in capsys.readouterr().out
+    assert "::error title=toolism::set exactly one" in capsys.readouterr().out
 
 
 def test_end_to_end_pass_then_fail(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -103,8 +103,8 @@ def test_end_to_end_pass_then_fail(tmp_path: Path, capsys: pytest.CaptureFixture
     assert passed["status"] == "pass"
     assert passed["delta"] == "0"
     assert int(passed["total"]) > 0
-    assert passed["summary-file"].endswith("toolslim.md")
-    assert "### ✅ toolslim" in capsys.readouterr().out
+    assert passed["summary-file"].endswith("toolism.md")
+    assert "### ✅ toolism" in capsys.readouterr().out
     (tmp_path / "output.txt").unlink()
 
     data = json.loads(tools.read_text(encoding="utf-8"))
@@ -115,8 +115,8 @@ def test_end_to_end_pass_then_fail(tmp_path: Path, capsys: pytest.CaptureFixture
     assert failed["status"] == "fail"
     assert int(failed["delta"]) > 0
     log = capsys.readouterr().out
-    assert "### ❌ toolslim" in log
-    assert "::error title=toolslim::tool definition token budget exceeded" in log
+    assert "### ❌ toolism" in log
+    assert "::error title=toolism::tool definition token budget exceeded" in log
 
 
 def test_outputs_go_to_stdout_without_github_output(capsys: pytest.CaptureFixture[str]) -> None:

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from toolslim import errors
-from toolslim.models import ToolDef, ToolFormat, ToolSet, canonical_json
+from toolism import errors
+from toolism.models import ToolDef, ToolFormat, ToolSet, canonical_json
 
 
 def make_tool(**kw: object) -> ToolDef:
@@ -97,9 +97,9 @@ def test_canonical_json_sorted_and_compact() -> None:
         errors.BaselineError,
     ],
 )
-def test_error_hierarchy(cls: type[errors.ToolslimError]) -> None:
+def test_error_hierarchy(cls: type[errors.ToolismError]) -> None:
     err = cls("boom", hint="try this")
-    assert isinstance(err, errors.ToolslimError)
+    assert isinstance(err, errors.ToolismError)
     assert err.message == "boom"
     assert err.hint == "try this"
     assert str(err) == "boom"
@@ -108,5 +108,5 @@ def test_error_hierarchy(cls: type[errors.ToolslimError]) -> None:
 def test_missing_extra_error_names_the_extra() -> None:
     err = errors.MissingExtraError("Verification", "verify")
     assert err.extra == "verify"
-    assert err.hint == "pip install 'toolslim[verify]'"
-    assert isinstance(err, errors.ToolslimError)
+    assert err.hint == "pip install 'toolism[verify]'"
+    assert isinstance(err, errors.ToolismError)

@@ -39,7 +39,7 @@ class ToolSet:
 **Errors** (`errors.py`):
 
 ```
-ToolslimError
+ToolismError
 ├── FormatError           # unrecognised / invalid / mixed tool formats, bad JSON
 ├── TokenizerError        # unknown tokenizer spec
 │   └── TokenizerUnavailable   # known, but can't load (missing extra, offline vocab, no API key)
@@ -60,7 +60,7 @@ ToolslimError
 
 - `replace()` returns a new object; `fingerprint()` is stable across key order and changes when any of the three fields change.
 - `render()` byte-exact output for a fixture; unicode stays unescaped.
-- An error-hierarchy test: every error is a `ToolslimError`.
+- An error-hierarchy test: every error is a `ToolismError`.
 
 ## Review
 

@@ -5,8 +5,8 @@ from typing import Any
 
 import pytest
 
-from toolslim.models import canonical_json
-from toolslim.schema import (
+from toolism.models import canonical_json
+from toolism.schema import (
     DefRef,
     Dialect,
     def_usage,

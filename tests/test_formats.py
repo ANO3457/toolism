@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from toolslim.errors import FormatError
-from toolslim.formats import detect_item_format, parse, serialize
-from toolslim.io import dump, dumps, load, loads
-from toolslim.models import ToolDef, ToolFormat, ToolSet
+from toolism.errors import FormatError
+from toolism.formats import detect_item_format, parse, serialize
+from toolism.io import dump, dumps, load, loads
+from toolism.models import ToolDef, ToolFormat, ToolSet
 
 FIXTURES = Path(__file__).parent / "fixtures" / "formats"
 FIXTURE_FILES = sorted(FIXTURES.glob("*.json"))
