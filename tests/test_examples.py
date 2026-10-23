@@ -68,9 +68,15 @@ def test_measure_savings_example_runs_offline() -> None:
         text=True,
         encoding="utf-8",
     ).stdout
-    match = re.search(r"tokens before: (\d+)\ntokens after:\s+(\d+)\nsaved:\s+(\d+) \((\d+\.\d+)%\)", out)
+    match = re.search(
+        r"tokens before: (\d+)\ntokens after:\s+(\d+)\nsaved:\s+(\d+) \((\d+\.\d+)%\)",
+        out,
+    )
     assert match is not None, out
-    before, after, saved, pct = (int(match.group(1)), int(match.group(2)), int(match.group(3)), float(match.group(4)))
+    before = int(match.group(1))
+    after = int(match.group(2))
+    saved = int(match.group(3))
+    pct = float(match.group(4))
     assert after < before
     assert saved == before - after
     assert 0 < pct < 100
