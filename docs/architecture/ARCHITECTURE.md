@@ -165,23 +165,34 @@ result = toolism.slim(ts, level="safe", verify=False, tokenizer="heuristic")
 result.toolset          # slimmed ToolSet
 result.report           # SlimReport: before/after, per-rule, per-tool
 toolism.dump(result.toolset)                       # same format/envelope as the input
+toolism.dumps(result.toolset)                      # ... or as a string
+toolism.loads(text)                                # parse a JSON string
+toolism.serialize(result.toolset)                  # back to a JSON-ready document in the input's format
 toolism.slim_tools(list_of_dicts) -> list[dict]    # one-liner for agent code
+toolism.load_mcp_stdio("npx -y @scope/server")     # tools from a live stdio MCP server (extra: mcp)
 toolism.list_rules()
 ```
 
-Everything else is internal (`toolism._...` or not re-exported).
+The models (`ToolDef`, `ToolSet`, `ToolFormat`, `TokenReport`, `SlimReport`, `SlimResult`,
+`Safety`, `Rule`) and the errors (`ToolismError` and its subclasses) are public too. The full list
+is `toolism.__all__`; everything else is internal (`toolism._...` or not re-exported).
 
 ## 10. CLI
 
 ```
-toolism measure SOURCE [--tokenizer T] [--format table|json|markdown] [-o FILE]
-toolism slim    SOURCE [-o FILE] [--level safe|annotations] [--enable ID]... [--disable ID]...
+toolism measure SOURCE [--tokenizer T] [--format table|json|markdown] [--output FILE]
+toolism slim    SOURCE [--output FILE] [--level safe|annotations] [--enable ID]... [--disable ID]...
                         [--option ID.key=value]... [--verify [--verify-examples N] [--fail-on-rollback]]
-                        [--tokenizer T] [--report table|json|markdown]
+                        [--tokenizer T] [--report table|json|markdown] [--report-file FILE]
+                        [--quiet] [--compact]
 toolism check   SOURCE --baseline FILE [--max-increase 10%|500] [--max-total N] [--max-tool N]
-                        [--update-baseline] [--tokenizer T] [--summary-md FILE]
-toolism rules   [--format table|json]
+                        [--update-baseline] [--allow-tokenizer-change] [--tokenizer T]
+                        [--format table|json|markdown] [--output FILE] [--summary-md FILE]
+toolism rules   [--format table|json|markdown] [--output FILE]
 ```
+
+`measure`, `slim` and `check` also take `--mcp COMMAND` and `--mcp-timeout SECONDS` in place of
+`SOURCE`. `toolism --help` and `toolism <command> --help` are the authoritative reference.
 
 - `SOURCE` is a JSON file, `-` for stdin, or `--mcp "<command>"` for a live stdio server.
 - **Exit codes:**
