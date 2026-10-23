@@ -114,7 +114,6 @@ Each of these makes a good first issue:
   `{type: [string, null], format: date}`, because `format`, `pattern`, `minLength` and
   `maxLength` only constrain strings. The Python SDK emits this for every `date | None`.
 - **Single-branch `allOf`.** `allOf: [X]` → `X`, when the sibling keywords don't conflict.
-- **SL103 `drop-titles` (lossy).** Drop every `title`, not just redundant ones.
 - **SL104 `dedupe-descriptions` (lossy).** Drop property descriptions repeated verbatim in the
   tool description.
 - **Gemini tokenizer.** `gemini:<model>` using the `count_tokens` API, mirroring
