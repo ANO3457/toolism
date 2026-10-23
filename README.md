@@ -207,6 +207,24 @@ The result is added to the job summary. Outputs: `status` (`pass`/`fail`/`error`
           path: ${{ steps.toolism.outputs.summary-file }}
 ```
 
+### pre-commit
+
+The same gate runs locally before each commit with [pre-commit](https://pre-commit.com):
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/rakeshnitb23/toolism
+    rev: vX.Y.Z  # the first release after 0.1.0 includes the hook
+    hooks:
+      - id: toolism-check
+        args: [tools.json, --baseline, .toolism/baseline.json, --max-increase, "5%"]
+        files: ^tools\.json$
+```
+
+The hook runs whenever a matching file is staged. Create the baseline once with
+`toolism check tools.json -b .toolism/baseline.json --update-baseline` and commit it.
+
 ## Token counts
 
 | Tokenizer | Use it for |

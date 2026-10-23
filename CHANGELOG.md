@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- pre-commit hook `toolism-check` (`.pre-commit-hooks.yaml`), the same budget gate as
+  `toolism check`, run before each commit.
+
 ## [0.1.0] - 2026-10-23
 
 ### Added
