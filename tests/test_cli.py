@@ -9,8 +9,8 @@ from typing import Any
 import pytest
 from typer.testing import CliRunner
 
-from toolslim import cli
-from toolslim.__about__ import __version__
+from toolism import cli
+from toolism.__about__ import __version__
 
 FIXTURES = Path(__file__).parent / "fixtures" / "formats"
 MCP_TOOLS = FIXTURES / "mcp_tools.json"
@@ -44,9 +44,9 @@ BLOATED = {
 
 @pytest.fixture
 def runner(monkeypatch: pytest.MonkeyPatch) -> CliRunner:
-    monkeypatch.setenv("TOOLSLIM_TOKENIZER", "heuristic")
+    monkeypatch.setenv("TOOLISM_TOKENIZER", "heuristic")
     monkeypatch.delenv("GITHUB_STEP_SUMMARY", raising=False)
-    monkeypatch.delenv("TOOLSLIM_DEBUG", raising=False)
+    monkeypatch.delenv("TOOLISM_DEBUG", raising=False)
     return CliRunner()
 
 
@@ -67,7 +67,7 @@ def invoke(runner: CliRunner, *args: Any, **kwargs: Any) -> Any:
 def test_version(runner: CliRunner) -> None:
     result = invoke(runner, "--version")
     assert result.exit_code == 0
-    assert result.stdout == f"toolslim {__version__}\n"
+    assert result.stdout == f"toolism {__version__}\n"
 
 
 def test_help_lists_commands(runner: CliRunner) -> None:
@@ -79,13 +79,13 @@ def test_help_lists_commands(runner: CliRunner) -> None:
 
 def test_python_dash_m() -> None:
     out = subprocess.run(
-        [sys.executable, "-m", "toolslim", "--version"],
+        [sys.executable, "-m", "toolism", "--version"],
         check=True,
         capture_output=True,
         text=True,
         encoding="utf-8",
     )
-    assert out.stdout.strip() == f"toolslim {__version__}"
+    assert out.stdout.strip() == f"toolism {__version__}"
 
 
 # ------------------------------------------------------------------- measure
@@ -122,7 +122,7 @@ def test_measure_stdin_and_output_file(runner: CliRunner, tmp_path: Path) -> Non
     )
     assert result.exit_code == 0, result.output
     assert result.stdout == ""
-    assert out.read_text(encoding="utf-8").startswith("### toolslim — tool definition tokens")
+    assert out.read_text(encoding="utf-8").startswith("### toolism — tool definition tokens")
 
 
 @pytest.mark.parametrize(
@@ -150,8 +150,8 @@ def test_invalid_json_reports_position(runner: CliRunner) -> None:
 
 
 def test_unavailable_tokenizer_exits_3(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
-    from toolslim.errors import TokenizerUnavailable
-    from toolslim.tokenizers import TiktokenTokenizer
+    from toolism.errors import TokenizerUnavailable
+    from toolism.tokenizers import TiktokenTokenizer
 
     def offline(self: Any, *args: Any, **kwargs: Any) -> Any:
         raise TokenizerUnavailable("cannot load o200k_base", hint="set TIKTOKEN_CACHE_DIR")
@@ -169,13 +169,13 @@ def test_internal_errors_are_one_line_unless_debug(
     def boom(*args: Any, **kwargs: Any) -> Any:
         raise RuntimeError("kaput")
 
-    monkeypatch.setattr("toolslim.measurement.measure", boom)
+    monkeypatch.setattr("toolism.measurement.measure", boom)
     result = invoke(runner, "measure", MCP_TOOLS)
     assert result.exit_code == 2
     assert result.stderr.startswith(
         "error: internal error: RuntimeError: kaput\nhint: this is a bug"
     )
-    monkeypatch.setenv("TOOLSLIM_DEBUG", "1")
+    monkeypatch.setenv("TOOLISM_DEBUG", "1")
     result = invoke(runner, "measure", MCP_TOOLS)
     assert isinstance(result.exception, RuntimeError)
 
@@ -253,7 +253,7 @@ def test_slim_enable_disable_with_commas(runner: CliRunner, bloated: Path) -> No
             "expects int",
             None,
         ),
-        (("-e", "SL999"), "error: unknown rule 'SL999'", "hint: run 'toolslim rules'"),
+        (("-e", "SL999"), "error: unknown rule 'SL999'", "hint: run 'toolism rules'"),
         (("--fail-on-rollback",), "error: --fail-on-rollback needs --verify", None),
     ],
 )
@@ -278,8 +278,8 @@ def test_slim_verify(runner: CliRunner, bloated: Path) -> None:
 def test_slim_fail_on_rollback_exits_1(
     runner: CliRunner, bloated: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from toolslim import pipeline
-    from toolslim.pipeline import Rollback
+    from toolism import pipeline
+    from toolism.pipeline import Rollback
 
     real = pipeline.slim
 
@@ -291,7 +291,7 @@ def test_slim_fail_on_rollback_exits_1(
         return type(result)(result.toolset, report)
 
     monkeypatch.setattr(pipeline, "slim", with_rollback)
-    monkeypatch.setattr("toolslim.pipeline.verify_available", lambda: True)
+    monkeypatch.setattr("toolism.pipeline.verify_available", lambda: True)
     result = invoke(runner, "slim", bloated, "--verify", "--fail-on-rollback", "-q")
     assert result.exit_code == 1
     assert json.loads(result.stdout)  # the slimmed JSON is still written
@@ -308,7 +308,7 @@ def grow(path: Path) -> None:
 
 
 def test_check_baseline_workflow(runner: CliRunner, bloated: Path, tmp_path: Path) -> None:
-    baseline = tmp_path / ".toolslim" / "baseline.json"
+    baseline = tmp_path / ".toolism" / "baseline.json"
     created = invoke(runner, "check", bloated, "-b", baseline, "--update-baseline")
     assert created.exit_code == 0, created.output
     assert created.stdout.startswith(f"Wrote {baseline}:")
@@ -316,12 +316,12 @@ def test_check_baseline_workflow(runner: CliRunner, bloated: Path, tmp_path: Pat
 
     same = invoke(runner, "check", bloated, "-b", baseline)
     assert same.exit_code == 0, same.output
-    assert "toolslim check PASSED" in same.stdout
+    assert "toolism check PASSED" in same.stdout
 
     grow(bloated)
     grown = invoke(runner, "check", bloated, "-b", baseline)
     assert grown.exit_code == 1
-    assert "toolslim check FAILED" in grown.stdout
+    assert "toolism check FAILED" in grown.stdout
     assert "over the allowed 0 tokens" in grown.stdout  # default: no growth
     assert grown.stderr == ""
 
@@ -346,10 +346,10 @@ def test_check_writes_markdown_summaries(
     assert result.exit_code == 1
     assert json.loads(result.stdout)["ok"] is False
     assert summary.read_text(encoding="utf-8").startswith(
-        "### ❌ toolslim — tool token budget failed"
+        "### ❌ toolism — tool token budget failed"
     )
     appended = step_summary.read_text(encoding="utf-8")
-    assert appended.startswith("earlier step\n### ❌ toolslim")
+    assert appended.startswith("earlier step\n### ❌ toolism")
     assert "over the per-tool cap of 10" in appended
 
 
@@ -424,15 +424,15 @@ def test_rules_formats(runner: CliRunner, tmp_path: Path) -> None:
 
 
 def test_mcp_without_extra(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
-    from toolslim.errors import MissingExtraError
+    from toolism.errors import MissingExtraError
 
     def missing() -> Any:
         raise MissingExtraError("Loading tools from an MCP server", "mcp")
 
-    monkeypatch.setattr("toolslim.loaders.mcp._import_mcp", missing)
+    monkeypatch.setattr("toolism.loaders.mcp._import_mcp", missing)
     result = invoke(runner, "measure", "--mcp", "npx -y some-server")
     assert result.exit_code == 2
-    assert "hint: pip install 'toolslim[mcp]'" in result.stderr
+    assert "hint: pip install 'toolism[mcp]'" in result.stderr
 
 
 @pytest.mark.mcp

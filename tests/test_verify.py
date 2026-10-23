@@ -5,8 +5,8 @@ from typing import Any
 
 import pytest
 
-from toolslim.errors import MissingExtraError
-from toolslim.verify import (
+from toolism.errors import MissingExtraError
+from toolism.verify import (
     ORIGINAL_TO_SLIM,
     SLIM_TO_ORIGINAL,
     Verdict,
@@ -37,7 +37,7 @@ def test_identical_schemas_short_circuit() -> None:
 def test_annotation_only_differences_are_proved_without_sampling(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import toolslim.verify as verify_module
+    import toolism.verify as verify_module
 
     def no_sampling(*args: Any) -> Any:
         raise AssertionError("must not sample")
@@ -138,7 +138,7 @@ def test_draft07_semantics_are_respected() -> None:
 
 
 def test_generation_follows_validator_dialect() -> None:
-    from toolslim.verify import _generation_schema
+    from toolism.verify import _generation_schema
 
     draft7 = {
         "$schema": "http://json-schema.org/draft-07/schema#",

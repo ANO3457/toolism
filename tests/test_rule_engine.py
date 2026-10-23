@@ -5,9 +5,9 @@ from typing import Any, ClassVar
 
 import pytest
 
-from toolslim.errors import RuleError
-from toolslim.models import ToolDef
-from toolslim.rules import (
+from toolism.errors import RuleError
+from toolism.models import ToolDef
+from toolism.rules import (
     OptionSpec,
     Rule,
     RuleContext,
@@ -19,8 +19,8 @@ from toolslim.rules import (
     register_rule,
     resolve_options,
 )
-from toolslim.rules import registry as registry_module
-from toolslim.schema import Dialect, SchemaPath
+from toolism.rules import registry as registry_module
+from toolism.schema import Dialect, SchemaPath
 
 
 @pytest.fixture
@@ -84,7 +84,7 @@ def test_register_and_lookup(isolated_registry: dict[str, type[Rule]]) -> None:
     assert register_rule(rule) is rule  # re-registering the same class is a no-op
     with pytest.raises(RuleError, match="unknown rule") as info:
         get_rule("SL999")
-    assert info.value.hint == "run 'toolslim rules' to list rules"
+    assert info.value.hint == "run 'toolism rules' to list rules"
 
 
 @pytest.mark.parametrize(

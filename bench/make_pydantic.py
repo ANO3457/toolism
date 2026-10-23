@@ -117,8 +117,8 @@ def merge_contacts(primary_id: str, duplicate_ids: list[str], dry_run: bool = Tr
 
 
 def write_snapshot() -> Path:
-    from toolslim.formats import serialize
-    from toolslim.loaders.mcp import load_mcp_stdio
+    from toolism.formats import serialize
+    from toolism.loaders.mcp import load_mcp_stdio
 
     toolset = load_mcp_stdio([sys.executable, __file__, "--serve"], timeout=120)
     target = Path(__file__).resolve().parent / "snapshots" / "fastmcp-pydantic.json"

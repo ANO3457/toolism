@@ -17,7 +17,7 @@ jobs:
           python-version: "3.12"
       - name: Check the tag matches the package version
         run: |
-          version="$(uv run --no-project python -c 'import runpy; print(runpy.run_path("src/toolslim/__about__.py")["__version__"])')"
+          version="$(uv run --no-project python -c 'import runpy; print(runpy.run_path("src/toolism/__about__.py")["__version__"])')"
           if [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
             echo "::error::tag ${GITHUB_REF_NAME} does not match __version__ ${version}"
             exit 1
@@ -61,7 +61,7 @@ jobs:
           match = re.search(
               rf"^## \[?{re.escape(version)}\]?[^\n]*\n(.*?)(?=^## |\Z)", text, re.M | re.S
           )
-          notes = match.group(1).strip() if match else f"toolslim {version}"
+          notes = match.group(1).strip() if match else f"toolism {version}"
           pathlib.Path("notes.md").write_text(notes + "\n", encoding="utf-8")
           EOF
       - run: gh release create "$GITHUB_REF_NAME" dist/* --title "$GITHUB_REF_NAME" --notes-file notes.md

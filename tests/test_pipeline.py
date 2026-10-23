@@ -6,14 +6,14 @@ from typing import Any
 
 import pytest
 
-from toolslim.errors import RuleError
-from toolslim.formats import parse
-from toolslim.models import ToolDef, ToolFormat, ToolSet
-from toolslim.pipeline import select_rules, slim
-from toolslim.rules import Rule, RuleContext, Safety, SchemaRule, ToolRule
-from toolslim.schema import SchemaPath
-from toolslim.tokenizers import HeuristicTokenizer
-from toolslim.verify import Verdict, verify_available
+from toolism.errors import RuleError
+from toolism.formats import parse
+from toolism.models import ToolDef, ToolFormat, ToolSet
+from toolism.pipeline import select_rules, slim
+from toolism.rules import Rule, RuleContext, Safety, SchemaRule, ToolRule
+from toolism.schema import SchemaPath
+from toolism.tokenizers import HeuristicTokenizer
+from toolism.verify import Verdict, verify_available
 
 H = HeuristicTokenizer()
 
@@ -311,7 +311,7 @@ class DropsRequired(SchemaRule):
 
 @pytest.mark.skipif(not verify_available(), reason="verify extra not installed")
 def test_verification_rolls_back_unsafe_changes() -> None:
-    from toolslim.rules import get_rule
+    from toolism.rules import get_rule
 
     ts = toolset(PYDANTIC_TOOL)
     result = slim(ts, rules=[get_rule("SL001"), DropsRequired], tokenizer=H, verify=True)
@@ -336,8 +336,8 @@ def test_verification_passes_for_safe_rules() -> None:
 
 
 def test_verify_without_extra(monkeypatch: pytest.MonkeyPatch) -> None:
-    from toolslim import pipeline
-    from toolslim.errors import MissingExtraError
+    from toolism import pipeline
+    from toolism.errors import MissingExtraError
 
     monkeypatch.setattr(pipeline, "verify_available", lambda: False)
     with pytest.raises(MissingExtraError):

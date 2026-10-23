@@ -14,9 +14,9 @@ from typing import Any
 
 import pytest
 
-from toolslim.formats import parse, serialize
-from toolslim.pipeline import slim
-from toolslim.verify import Verdict, check_equivalence, verify_available
+from toolism.formats import parse, serialize
+from toolism.pipeline import slim
+from toolism.verify import Verdict, check_equivalence, verify_available
 
 BENCH = Path(__file__).resolve().parents[1] / "bench"
 SNAPSHOTS = sorted((BENCH / "snapshots").glob("*.json"))

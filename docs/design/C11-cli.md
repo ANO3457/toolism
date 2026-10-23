@@ -7,14 +7,14 @@ A thin, predictable command-line layer over the library. No business logic lives
 ## Commands
 
 ```
-toolslim measure [SOURCE] [--mcp CMD] [-t/--tokenizer T] [-f/--format table|json|markdown] [-o FILE]
-toolslim slim    [SOURCE] [--mcp CMD] [-o FILE] [--level safe|annotations] [-e/--enable R]... [-d/--disable R]...
+toolism measure [SOURCE] [--mcp CMD] [-t/--tokenizer T] [-f/--format table|json|markdown] [-o FILE]
+toolism slim    [SOURCE] [--mcp CMD] [-o FILE] [--level safe|annotations] [-e/--enable R]... [-d/--disable R]...
                  [--option R.key=value]... [--verify] [--verify-examples N] [--fail-on-rollback]
                  [-t T] [-r/--report table|json|markdown] [--report-file FILE] [--compact]
-toolslim check   [SOURCE] [--mcp CMD] -b/--baseline FILE [--max-increase X] [--max-total N] [--max-tool N]
+toolism check   [SOURCE] [--mcp CMD] -b/--baseline FILE [--max-increase X] [--max-total N] [--max-tool N]
                  [--update-baseline] [--allow-tokenizer-change] [-t T] [-f table|markdown|json] [--summary-md FILE]
-toolslim rules   [-f table|json]
-toolslim --version
+toolism rules   [-f table|json]
+toolism --version
 ```
 
 ## Behaviour
@@ -22,7 +22,7 @@ toolslim --version
 **Input.** `SOURCE` is a path or `-` (stdin). Exactly one of `SOURCE` / `--mcp` is required (usage error otherwise).
 
 **Streams:**
-- `slim` writes the slimmed JSON to `-o` or stdout, and the report to stderr (or `--report-file`). So `toolslim slim tools.json > slim.json` gives clean JSON.
+- `slim` writes the slimmed JSON to `-o` or stdout, and the report to stderr (or `--report-file`). So `toolism slim tools.json > slim.json` gives clean JSON.
 - `measure`, `check` and `rules` write their report to stdout (or `-o`).
 
 **Exit codes:**
@@ -30,7 +30,7 @@ toolslim --version
 - `1` check failed / rollback with `--fail-on-rollback`
 - `2` usage, format, rule, baseline or loader error
 - `3` tokenizer unavailable
-- Errors print a single line `error: …` (plus a `hint: …` line when there is one) to stderr. No tracebacks unless `TOOLSLIM_DEBUG=1`.
+- Errors print a single line `error: …` (plus a `hint: …` line when there is one) to stderr. No tracebacks unless `TOOLISM_DEBUG=1`.
 
 **GitHub.** When `GITHUB_STEP_SUMMARY` is set, `check` appends its markdown report to that file. `--summary-md FILE` writes it to an explicit file.
 

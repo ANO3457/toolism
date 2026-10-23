@@ -16,8 +16,8 @@ Count a tool set, and render `TokenReport` and `SlimReport` for humans (terminal
 def measure(toolset: ToolSet, tokenizer: str | Tokenizer | None = None) -> TokenReport
 
 # report.py
-def token_report_to_dict(r: TokenReport) -> dict      # {"toolslim_report": 1, "kind": "measure", ...}
-def slim_report_to_dict(r: SlimReport) -> dict        # {"toolslim_report": 1, "kind": "slim", ...}
+def token_report_to_dict(r: TokenReport) -> dict      # {"toolism_report": 1, "kind": "measure", ...}
+def slim_report_to_dict(r: SlimReport) -> dict        # {"toolism_report": 1, "kind": "slim", ...}
 def render_token_report(r, fmt: Literal["table","json","markdown"]) -> str
 def render_slim_report(r, fmt) -> str
 ```
@@ -38,7 +38,7 @@ def render_slim_report(r, fmt) -> str
 
 **Markdown** has the same content as GitHub-flavoured tables (used by the Action step summary and PR comments).
 
-**JSON:** stable keys, versioned with `"toolslim_report": 1`, integers for tokens, percentages rounded to 2 decimals.
+**JSON:** stable keys, versioned with `"toolism_report": 1`, integers for tokens, percentages rounded to 2 decimals.
 
 ## Tests
 

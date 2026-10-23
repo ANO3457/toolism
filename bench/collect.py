@@ -17,9 +17,9 @@ from pathlib import Path
 
 import tomllib
 
-from toolslim.errors import ToolslimError
-from toolslim.formats import serialize
-from toolslim.loaders.mcp import load_mcp_stdio
+from toolism.errors import ToolismError
+from toolism.formats import serialize
+from toolism.loaders.mcp import load_mcp_stdio
 
 BENCH = Path(__file__).resolve().parent
 SNAPSHOTS = BENCH / "snapshots"
@@ -47,11 +47,11 @@ def main(argv: list[str] | None = None) -> int:
     chosen = [s for s in servers() if not args.names or s["name"] in args.names]
     SNAPSHOTS.mkdir(exist_ok=True)
     failed = 0
-    with tempfile.TemporaryDirectory(prefix="toolslim-bench-") as scratch:
+    with tempfile.TemporaryDirectory(prefix="toolism-bench-") as scratch:
         for server in chosen:
             try:
                 path = collect(server, Path(scratch), args.timeout)
-            except ToolslimError as exc:
+            except ToolismError as exc:
                 failed += 1
                 print(f"FAIL {server['name']}: {exc.message}", file=sys.stderr)
                 if exc.hint:

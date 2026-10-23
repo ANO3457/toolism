@@ -6,9 +6,9 @@ from typing import Any
 import pytest
 
 from conftest import requires_tiktoken
-from toolslim.errors import TokenizerError, TokenizerUnavailable
-from toolslim.models import ToolDef
-from toolslim.tokenizers import (
+from toolism.errors import TokenizerError, TokenizerUnavailable
+from toolism.models import ToolDef
+from toolism.tokenizers import (
     DEFAULT_TOKENIZER,
     ENV_VAR,
     AnthropicTokenizer,
@@ -17,8 +17,8 @@ from toolslim.tokenizers import (
     Tokenizer,
     get_tokenizer,
 )
-from toolslim.tokenizers import base as base_module
-from toolslim.tokenizers.anthropic_tokenizer import to_anthropic_tool
+from toolism.tokenizers import base as base_module
+from toolism.tokenizers.anthropic_tokenizer import to_anthropic_tool
 
 TOOL = ToolDef(
     name="create_issue",

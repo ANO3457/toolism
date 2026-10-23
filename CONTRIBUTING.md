@@ -1,7 +1,7 @@
-# Contributing to toolslim
+# Contributing to toolism
 
 Thanks for helping make tool definitions cheaper. New rules, tokenizers, input formats and
-benchmark servers are all welcome, as are bug reports with a tool definition that toolslim gets
+benchmark servers are all welcome, as are bug reports with a tool definition that toolism gets
 wrong.
 
 ## Development setup
@@ -9,9 +9,9 @@ wrong.
 You need [uv](https://docs.astral.sh/uv/) and Python 3.10+.
 
 ```bash
-git clone https://github.com/sudheer215s/toolslim && cd toolslim
-uv sync --all-extras          # creates .venv with toolslim, all extras and dev tools
-uv run toolslim --version
+git clone https://github.com/rakeshnitb23/toolism && cd toolism
+uv sync --all-extras          # creates .venv with toolism, all extras and dev tools
+uv run toolism --version
 ```
 
 ## Checks
@@ -35,7 +35,7 @@ See [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md).
 
 ## Adding a rule in 3 steps
 
-**1. Write the rule** in `src/toolslim/rules/slNNN_your_rule_name.py`. It is discovered
+**1. Write the rule** in `src/toolism/rules/slNNN_your_rule_name.py`. It is discovered
 automatically. Most rules transform one subschema at a time:
 
 ```python
@@ -43,9 +43,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from toolslim.rules.base import RuleContext, Safety, SchemaRule
-from toolslim.rules.registry import register_rule
-from toolslim.schema import SchemaPath
+from toolism.rules.base import RuleContext, Safety, SchemaRule
+from toolism.rules.registry import register_rule
+from toolism.schema import SchemaPath
 
 
 @register_rule
@@ -70,7 +70,7 @@ class YourRuleName(SchemaRule):
   `Safety.CHANGES_VALIDATION`. Registration rejects a mismatch.
 - **Walk only real subschemas.** `transform` is called for every subschema (post-order) and
   never inside `enum`, `const`, `default` or `examples` values. Use
-  `toolslim.schema.property_name(path)` to see whether a node is a property.
+  `toolism.schema.property_name(path)` to see whether a node is a property.
 - **When in doubt, don't.** Respect `ctx.strict` (OpenAI strict mode) and `ctx.dialect`, and
   leave anything unusual alone. A rule that skips an edge case costs a few tokens; a rule that
   changes validation breaks someone's agent.
@@ -96,7 +96,7 @@ uv run pytest -m slow tests/test_bench.py      # your rule on 159 real tools
 **3. Regenerate the docs** and note the change:
 
 ```bash
-uv run toolslim rules -f markdown -o docs/rules.md   # a test fails if this is stale
+uv run toolism rules -f markdown -o docs/rules.md   # a test fails if this is stale
 ```
 
 Then add a line under `## [Unreleased]` in `CHANGELOG.md`, and if the rule saves tokens on the
@@ -118,7 +118,7 @@ Each of these makes a good first issue:
   `tokenizers/anthropic_tokenizer.py`.
 - **More formats.** Gemini function declarations; LangChain and LlamaIndex tool exports.
 - **HTTP MCP servers.** A loader for streamable-HTTP servers (`--mcp-url`).
-- **`toolslim diff`.** Show per-tool schema diffs of what slimming changed.
+- **`toolism diff`.** Show per-tool schema diffs of what slimming changed.
 - **More benchmark servers.** Add an entry to `bench/servers.toml`, then run
   `uv run python bench/collect.py <name>` and `bench/run.py`.
 
@@ -131,13 +131,13 @@ Each of these makes a good first issue:
 
 ## Releasing (maintainers)
 
-1. Set `__version__` in `src/toolslim/__about__.py` and move the CHANGELOG's `Unreleased`
+1. Set `__version__` in `src/toolism/__about__.py` and move the CHANGELOG's `Unreleased`
    section under the new version.
 2. Commit, tag `vX.Y.Z` and push the tag. The `Release` workflow checks that the tag matches
    `__version__`, builds, publishes to PyPI with trusted publishing, and creates the GitHub
    release from the CHANGELOG.
-3. The GitHub Action is versioned by the same tag (`uses: sudheer215s/toolslim@vX.Y.Z`).
+3. The GitHub Action is versioned by the same tag (`uses: rakeshnitb23/toolism@vX.Y.Z`).
 
-**One-time setup.** On pypi.org, add a trusted publisher: owner `sudheer215s`, repository
-`toolslim`, workflow `release.yml`, environment `pypi`. Then create a `pypi` environment in the
+**One-time setup.** On pypi.org, add a trusted publisher: owner `rakeshnitb23`, repository
+`toolism`, workflow `release.yml`, environment `pypi`. Then create a `pypi` environment in the
 repository settings. No API token is stored anywhere.

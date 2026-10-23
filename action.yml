@@ -1,6 +1,6 @@
-name: toolslim check
+name: toolism check
 description: Fail a pull request when your LLM tool or MCP schemas cost more tokens than your budget.
-author: sudheer215s
+author: rakeshnitb23
 branding:
   icon: scissors
   color: green
@@ -15,9 +15,9 @@ inputs:
     required: false
     default: ""
   baseline:
-    description: Committed baseline file. Create it with `toolslim check SOURCE -b FILE --update-baseline`.
+    description: Committed baseline file. Create it with `toolism check SOURCE -b FILE --update-baseline`.
     required: false
-    default: .toolslim/baseline.json
+    default: .toolism/baseline.json
   max-increase:
     description: Allowed growth over the baseline, `10%` and/or `500` (tokens; both = larger allowance). Default no growth.
     required: false
@@ -43,7 +43,7 @@ inputs:
     required: false
     default: "false"
   python-version:
-    description: Python used to run toolslim.
+    description: Python used to run toolism.
     required: false
     default: "3.12"
 
@@ -72,10 +72,10 @@ runs:
     - name: Cache tiktoken vocabulary
       uses: actions/cache@v4
       with:
-        path: ~/.cache/toolslim-tiktoken
-        key: toolslim-tiktoken-${{ runner.os }}-v1
+        path: ~/.cache/toolism-tiktoken
+        key: toolism-tiktoken-${{ runner.os }}-v1
 
-    - name: Install toolslim from this action's ref
+    - name: Install toolism from this action's ref
       shell: bash
       env:
         WANT_MCP: ${{ inputs.mcp != '' }}
@@ -98,5 +98,5 @@ runs:
         INPUT_UPDATE_BASELINE: ${{ inputs.update-baseline }}
         INPUT_ALLOW_TOKENIZER_CHANGE: ${{ inputs.allow-tokenizer-change }}
       run: |
-        export TIKTOKEN_CACHE_DIR="${TIKTOKEN_CACHE_DIR:-$HOME/.cache/toolslim-tiktoken}"
-        python -m toolslim._action
+        export TIKTOKEN_CACHE_DIR="${TIKTOKEN_CACHE_DIR:-$HOME/.cache/toolism-tiktoken}"
+        python -m toolism._action

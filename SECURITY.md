@@ -3,7 +3,7 @@
 ## Reporting a vulnerability
 
 Please report vulnerabilities privately through
-[GitHub security advisories](https://github.com/sudheer215s/toolslim/security/advisories/new),
+[GitHub security advisories](https://github.com/rakeshnitb23/toolism/security/advisories/new),
 not in public issues. You can expect an acknowledgement within a few days and a fix or a
 mitigation plan within 30 days for confirmed issues.
 
@@ -13,7 +13,7 @@ Only the latest release receives security fixes.
 
 ## Trust model
 
-- **Tool definition files are data.** toolslim parses them as JSON and never executes or evaluates
+- **Tool definition files are data.** toolism parses them as JSON and never executes or evaluates
   anything in them. Malformed or hostile input should produce an error, never code execution. If
   you find otherwise, that is a vulnerability.
 - **`--mcp COMMAND` runs that command**, exactly like typing it in your shell. The server process

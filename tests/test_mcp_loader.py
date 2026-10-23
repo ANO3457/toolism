@@ -10,9 +10,9 @@ from typing import Any
 import anyio
 import pytest
 
-from toolslim.errors import LoaderError, MissingExtraError
-from toolslim.loaders import mcp as loader
-from toolslim.models import ToolFormat
+from toolism.errors import LoaderError, MissingExtraError
+from toolism.loaders import mcp as loader
+from toolism.models import ToolFormat
 
 DEMO = Path(__file__).parent / "servers" / "demo_server.py"
 
@@ -171,7 +171,7 @@ def test_missing_extra(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(builtins, "__import__", fake_import)
     with pytest.raises(MissingExtraError) as info:
         loader.load_mcp_stdio("anything")
-    assert info.value.hint == "pip install 'toolslim[mcp]'"
+    assert info.value.hint == "pip install 'toolism[mcp]'"
 
 
 # --------------------------------------------------------------- integration
@@ -180,7 +180,7 @@ def test_missing_extra(monkeypatch: pytest.MonkeyPatch) -> None:
 @requires_mcp
 @pytest.mark.mcp
 def test_load_demo_server() -> None:
-    from toolslim.pipeline import slim
+    from toolism.pipeline import slim
 
     toolset = loader.load_mcp_stdio([sys.executable, str(DEMO)], timeout=60)
     assert toolset.format is ToolFormat.MCP
@@ -229,7 +229,7 @@ def test_load_with_cwd_and_env(tmp_path: Path) -> None:
 @pytest.mark.mcp
 def test_command_not_found() -> None:
     with pytest.raises(LoaderError, match="failed: command not found"):
-        loader.load_mcp_stdio("toolslim-no-such-command-xyz", timeout=20)
+        loader.load_mcp_stdio("toolism-no-such-command-xyz", timeout=20)
 
 
 @requires_mcp

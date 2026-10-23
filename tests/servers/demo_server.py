@@ -14,7 +14,7 @@ try:
 except ImportError:  # mcp 1.x
     from mcp.server.fastmcp import FastMCP as Server  # type: ignore[no-redef]
 
-server = Server("toolslim-demo")
+server = Server("toolism-demo")
 
 
 class Address(BaseModel):

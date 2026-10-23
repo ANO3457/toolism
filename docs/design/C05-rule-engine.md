@@ -25,7 +25,7 @@ class RuleContext:
 class Rule(ABC):
     id: ClassVar[str]               # "SL001"
     name: ClassVar[str]             # "redundant-title"
-    summary: ClassVar[str]          # one line, shown by `toolslim rules`
+    summary: ClassVar[str]          # one line, shown by `toolism rules`
     safety: ClassVar[Safety]
     default_enabled: ClassVar[bool] = True
     reorders: ClassVar[bool] = False        # True only for tool-order rules (SL007)
@@ -53,7 +53,7 @@ def parse_option_assignment(text: str) -> tuple[str, str, Any]   # "SL101.max_ch
 
 ## Behaviour & edge cases
 
-**Discovery:** `toolslim.rules` imports every module named `sl[0-9][0-9][0-9]_*.py` in its package, in sorted order. Contributors drop in a file — no list to edit.
+**Discovery:** `toolism.rules` imports every module named `sl[0-9][0-9][0-9]_*.py` in its package, in sorted order. Contributors drop in a file — no list to edit.
 
 **Registration checks:**
 - id matches `^SL\d{3}$`

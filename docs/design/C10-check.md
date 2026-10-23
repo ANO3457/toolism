@@ -9,7 +9,7 @@ Stop tool-definition token cost from silently growing. Used in CI.
 ```python
 @dataclass(frozen=True)
 class Baseline:
-    tokenizer: str; total: int; tools: dict[str, int]; toolslim_version: str; version: int = 1
+    tokenizer: str; total: int; tools: dict[str, int]; toolism_version: str; version: int = 1
 
 def load_baseline(path) -> Baseline            # BaselineError on missing / bad / unknown version
 def save_baseline(path, report: TokenReport) -> Baseline

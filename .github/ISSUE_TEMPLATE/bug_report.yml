@@ -1,5 +1,5 @@
 name: Bug report
-description: toolslim crashed, or slimmed a tool definition incorrectly
+description: toolism crashed, or slimmed a tool definition incorrectly
 labels: [bug]
 body:
   - type: markdown
@@ -23,16 +23,16 @@ body:
     id: command
     attributes:
       label: Command or code you ran
-      placeholder: toolslim slim tools.json --verify
+      placeholder: toolism slim tools.json --verify
   - type: textarea
     id: output
     attributes:
-      label: Output (with TOOLSLIM_DEBUG=1 for a traceback)
+      label: Output (with TOOLISM_DEBUG=1 for a traceback)
       render: text
   - type: input
     id: version
     attributes:
       label: Versions
-      placeholder: "toolslim --version; Python 3.12; OS"
+      placeholder: "toolism --version; Python 3.12; OS"
     validations:
       required: true

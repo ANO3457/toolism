@@ -5,18 +5,18 @@ from typing import Any
 
 import pytest
 
-from toolslim.formats import parse
-from toolslim.measurement import TokenReport, ToolCount, measure
-from toolslim.pipeline import Rollback, slim
-from toolslim.report import (
+from toolism.formats import parse
+from toolism.measurement import TokenReport, ToolCount, measure
+from toolism.pipeline import Rollback, slim
+from toolism.report import (
     REPORT_VERSION,
     render_slim_report,
     render_token_report,
     slim_report_to_dict,
     token_report_to_dict,
 )
-from toolslim.tokenizers import HeuristicTokenizer
-from toolslim.verify import Verdict, VerificationResult
+from toolism.tokenizers import HeuristicTokenizer
+from toolism.verify import Verdict, VerificationResult
 
 H = HeuristicTokenizer()
 
@@ -64,7 +64,7 @@ def test_empty_measure() -> None:
 def test_token_report_dict_and_json() -> None:
     report = measure(TOOLS, H)
     data = token_report_to_dict(report)
-    assert data["toolslim_report"] == REPORT_VERSION
+    assert data["toolism_report"] == REPORT_VERSION
     assert data["kind"] == "measure"
     assert data["total_tokens"] == report.total
     assert [t["name"] for t in data["tools"]] == ["search", "ping"]
@@ -80,7 +80,7 @@ def test_token_report_table_and_markdown() -> None:
     assert "heuristic (approximate)" in table
     assert table.index("search") < table.index("ping")  # sorted by tokens
     md = render_token_report(report, "markdown")
-    assert md.startswith("### toolslim — tool definition tokens")
+    assert md.startswith("### toolism — tool definition tokens")
     assert "| `search` |" in md
     assert "| Tool | Tokens | % of total |" in md
 
@@ -164,12 +164,12 @@ def test_slim_report_with_no_changes() -> None:
 
 
 def test_docs_rules_md_is_up_to_date() -> None:
-    """docs/rules.md is generated; regenerate with `toolslim rules -f markdown -o docs/rules.md`."""
+    """docs/rules.md is generated; regenerate with `toolism rules -f markdown -o docs/rules.md`."""
     from pathlib import Path
 
-    from toolslim.report import render_rules
+    from toolism.report import render_rules
 
     page = Path(__file__).resolve().parents[1] / "docs" / "rules.md"
     assert page.read_text(encoding="utf-8") == render_rules("markdown"), (
-        "docs/rules.md is stale: run `uv run toolslim rules -f markdown -o docs/rules.md`"
+        "docs/rules.md is stale: run `uv run toolism rules -f markdown -o docs/rules.md`"
     )

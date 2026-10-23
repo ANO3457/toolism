@@ -2352,7 +2352,7 @@ wheels = [
 ]
 
 [[package]]
-name = "toolslim"
+name = "toolism"
 source = { editable = "." }
 dependencies = [
     { name = "rich" },
@@ -2390,7 +2390,7 @@ dev = [
     { name = "pytest-cov" },
     { name = "pytest-github-actions-annotate-failures" },
     { name = "ruff" },
-    { name = "toolslim", extra = ["all"] },
+    { name = "toolism", extra = ["all"] },
 ]
 
 [package.metadata]
@@ -2419,7 +2419,7 @@ dev = [
     { name = "pytest-cov", specifier = ">=5" },
     { name = "pytest-github-actions-annotate-failures", specifier = ">=0.2" },
     { name = "ruff", specifier = ">=0.6" },
-    { name = "toolslim", extras = ["all"] },
+    { name = "toolism", extras = ["all"] },
 ]
 
 [[package]]

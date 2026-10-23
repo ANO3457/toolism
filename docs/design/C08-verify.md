@@ -31,7 +31,7 @@ def verify_available() -> bool
    3. Run a Hypothesis test with `settings(max_examples, derandomize=True, database=None, deadline=None, suppress_health_check=all)`. The body is: if `src_validator` rejects `x` → ignore (generator imprecision); if `dst_validator` rejects `x` → raise `_Counterexample(x)`.
    4. Hypothesis shrinks and re-raises → COUNTEREXAMPLE with the minimal example.
 4. **Generation can't run** → SKIPPED with the message. This covers unsupported keywords, unresolvable refs, `Unsatisfiable`, or an `InvalidArgument` from the strategy.
-5. **Missing extra** → `MissingExtraError("pip install 'toolslim[verify]'")`.
+5. **Missing extra** → `MissingExtraError("pip install 'toolism[verify]'")`.
 
 ## Limits (documented, not hidden)
 

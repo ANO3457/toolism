@@ -1,4 +1,4 @@
-"""The examples run, and the numbers quoted in the README are the numbers toolslim produces."""
+"""The examples run, and the numbers quoted in the README are the numbers toolism produces."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-import toolslim
+import toolism
 from conftest import requires_tiktoken
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,8 +18,8 @@ EXAMPLES = sorted((ROOT / "examples").glob("*.json"))
 
 @pytest.mark.parametrize("path", EXAMPLES, ids=lambda p: p.name)
 def test_example_files_slim_with_savings(path: Path) -> None:
-    toolset = toolslim.load(path)
-    result = toolslim.slim(toolset, tokenizer="heuristic", verify=True)
+    toolset = toolism.load(path)
+    result = toolism.slim(toolset, tokenizer="heuristic", verify=True)
     assert result.report.saved > 0
     assert not result.report.rollbacks
 
@@ -40,9 +40,9 @@ def test_agent_startup_example_runs_offline() -> None:
 @requires_tiktoken
 def test_readme_quickstart_numbers_are_real() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    toolset = toolslim.load(ROOT / "examples" / "mcp_tools.json")
-    report = toolslim.measure(toolset, tokenizer="tiktoken:o200k_base")
-    slim = toolslim.slim(toolset, tokenizer="tiktoken:o200k_base").report
+    toolset = toolism.load(ROOT / "examples" / "mcp_tools.json")
+    report = toolism.measure(toolset, tokenizer="tiktoken:o200k_base")
+    slim = toolism.slim(toolset, tokenizer="tiktoken:o200k_base").report
     assert f"{report.total} tokens across 3 tools (average {report.total // 3})" in readme
     assert f"Slimmed 3 tools: {slim.before} → {slim.after} tokens" in readme
     assert f"baseline {slim.after}, +{slim.saved}," in readme

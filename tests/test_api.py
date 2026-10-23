@@ -11,8 +11,8 @@ from typing import Any
 
 import pytest
 
-import toolslim
-from toolslim.tokenizers import HeuristicTokenizer
+import toolism
+from toolism.tokenizers import HeuristicTokenizer
 
 FIXTURE = Path(__file__).parent / "fixtures" / "formats" / "mcp_tools.json"
 
@@ -30,55 +30,55 @@ ANTHROPIC = [
 ]
 
 
-@pytest.mark.parametrize("name", toolslim.__all__)
+@pytest.mark.parametrize("name", toolism.__all__)
 def test_every_public_name_resolves(name: str) -> None:
-    assert getattr(toolslim, name) is not None
-    assert name in dir(toolslim)
+    assert getattr(toolism, name) is not None
+    assert name in dir(toolism)
 
 
 def test_no_submodule_shadows_a_public_name() -> None:
-    """Importing ``toolslim.x`` binds ``x`` on the package, hiding a lazy function ``x``."""
-    package = Path(toolslim.__file__).parent
+    """Importing ``toolism.x`` binds ``x`` on the package, hiding a lazy function ``x``."""
+    package = Path(toolism.__file__).parent
     submodules = {p.stem for p in package.glob("*.py")} | {
         p.name for p in package.iterdir() if (p / "__init__.py").exists()
     }
-    assert not submodules & set(toolslim.__all__)
-    importlib.import_module("toolslim.measurement")
-    importlib.import_module("toolslim.pipeline")
-    assert callable(toolslim.measure)
-    assert callable(toolslim.slim)
+    assert not submodules & set(toolism.__all__)
+    importlib.import_module("toolism.measurement")
+    importlib.import_module("toolism.pipeline")
+    assert callable(toolism.measure)
+    assert callable(toolism.slim)
 
 
 def test_unknown_attribute() -> None:
     with pytest.raises(AttributeError, match="no attribute 'nope'"):
-        _ = toolslim.nope  # type: ignore[attr-defined]
+        _ = toolism.nope  # type: ignore[attr-defined]
 
 
 def test_import_is_lazy() -> None:
     code = (
-        "import json, sys, toolslim; "
-        "print(json.dumps(sorted(m for m in sys.modules if m.startswith('toolslim'))))"
+        "import json, sys, toolism; "
+        "print(json.dumps(sorted(m for m in sys.modules if m.startswith('toolism'))))"
     )
     out = subprocess.run(
         [sys.executable, "-c", code], check=True, capture_output=True, text=True, encoding="utf-8"
     )
-    assert json.loads(out.stdout) == ["toolslim", "toolslim.__about__"]
+    assert json.loads(out.stdout) == ["toolism", "toolism.__about__"]
 
 
 def test_documented_workflow(tmp_path: Path) -> None:
-    toolset = toolslim.load(FIXTURE)
-    report = toolslim.measure(toolset, tokenizer="heuristic")
+    toolset = toolism.load(FIXTURE)
+    report = toolism.measure(toolset, tokenizer="heuristic")
     assert report.total > 0
-    result = toolslim.slim(toolset, tokenizer="heuristic")
+    result = toolism.slim(toolset, tokenizer="heuristic")
     assert result.report.after <= report.total
     out = tmp_path / "slim.json"
-    toolslim.dump(result.toolset, out)
-    assert toolslim.loads(out.read_text(encoding="utf-8")).format is toolslim.ToolFormat.MCP
-    assert [r.id for r in toolslim.list_rules()][:2] == ["SL001", "SL002"]
+    toolism.dump(result.toolset, out)
+    assert toolism.loads(out.read_text(encoding="utf-8")).format is toolism.ToolFormat.MCP
+    assert [r.id for r in toolism.list_rules()][:2] == ["SL001", "SL002"]
 
 
 def test_slim_tools_keeps_shape_and_returns_fresh_objects() -> None:
-    first: Any = toolslim.slim_tools(ANTHROPIC)
+    first: Any = toolism.slim_tools(ANTHROPIC)
     assert isinstance(first, list)
     assert first[0]["input_schema"] == {
         "type": "object",
@@ -86,13 +86,13 @@ def test_slim_tools_keeps_shape_and_returns_fresh_objects() -> None:
         "required": ["city"],
     }
     first[0]["name"] = "mutated"
-    second = toolslim.slim_tools(ANTHROPIC)
+    second = toolism.slim_tools(ANTHROPIC)
     assert second[0]["name"] == "get_weather"  # cache is not affected by caller mutation
     assert ANTHROPIC[0]["input_schema"]["title"] == "get_weatherArguments"  # input untouched
 
 
 def test_slim_tools_passes_options_and_handles_uncacheable_settings() -> None:
-    kept = toolslim.slim_tools(ANTHROPIC, disable=["SL001"])
+    kept = toolism.slim_tools(ANTHROPIC, disable=["SL001"])
     assert kept[0]["input_schema"]["title"] == "get_weatherArguments"
-    uncached = toolslim.slim_tools(ANTHROPIC, tokenizer=HeuristicTokenizer())
-    assert uncached == toolslim.slim_tools(ANTHROPIC)
+    uncached = toolism.slim_tools(ANTHROPIC, tokenizer=HeuristicTokenizer())
+    assert uncached == toolism.slim_tools(ANTHROPIC)
