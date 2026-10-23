@@ -153,11 +153,11 @@ def test_unavailable_tokenizer_exits_3(runner: CliRunner, monkeypatch: pytest.Mo
     from toolism.errors import TokenizerUnavailable
     from toolism.tokenizers import TiktokenTokenizer
 
-    def offline(self: Any, *args: Any, **kwargs: Any) -> Any:
+    def unavailable_load(encoding: str) -> Any:
         raise TokenizerUnavailable("cannot load o200k_base", hint="set TIKTOKEN_CACHE_DIR")
 
-    monkeypatch.setattr(TiktokenTokenizer, "count_tools", offline)
-    monkeypatch.setattr(TiktokenTokenizer, "count_tool", offline)
+    # Stub the vocabulary load so the test does not touch the network (or a warm cache).
+    monkeypatch.setattr(TiktokenTokenizer, "_load", staticmethod(unavailable_load))
     result = invoke(runner, "measure", MCP_TOOLS, "-t", "tiktoken:o200k_base")
     assert result.exit_code == 3
     assert result.stderr == "error: cannot load o200k_base\nhint: set TIKTOKEN_CACHE_DIR\n"
