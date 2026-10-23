@@ -63,6 +63,7 @@ def test_readme_benchmark_numbers_match_results() -> None:
     assert f"**{total:.1f}% in total, with a median of {median:.1f}% per tool set**" in readme
     assert f"On {len(results['snapshots'])} tool sets ({results['total_tools']} tools" in readme
 
+
 def test_measure_savings_example_runs_offline() -> None:
     out = subprocess.run(
         [sys.executable, str(ROOT / "examples" / "measure_savings.py")],
