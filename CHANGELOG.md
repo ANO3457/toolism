@@ -5,7 +5,6 @@ All notable changes to this project are documented here. The format follows
 [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
-- Python 3.14 is now tested in CI and listed in the package classifiers.
 
 ### Added
 
