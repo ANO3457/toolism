@@ -20,6 +20,7 @@ annotations and run with `--level annotations`. Turn any rule on or off with `--
 | [`SL009`](#sl009-schema-uri) | schema-uri | safe | default |
 | [`SL101`](#sl101-max-description-length) | max-description-length | annotations | `--level annotations` |
 | [`SL102`](#sl102-drop-examples) | drop-examples | annotations | `--level annotations` |
+| [`SL104`](#sl104-dedupe-descriptions) | dedupe-descriptions | annotations | `--level annotations` |
 
 ## SL001 redundant-title
 
@@ -149,6 +150,17 @@ opt-in. Tool-level descriptions are only truncated with `include_tool=true`.
 
 Examples are annotations: dropping them never changes validation, but they can help the
 model produce well-formed arguments — measure before and after on your own evals.
+
+- Safety: `annotations` — Validation-equivalent, but may drop annotation text the model could use.
+- Enabled by: `--level annotations`
+
+## SL104 dedupe-descriptions
+
+**Drop property descriptions that appear verbatim in the tool description.**
+
+Some servers repeat each property's description word for word in the tool description, so
+the model pays for the same text twice. Drop the property-level copy only when it appears
+verbatim (after whitespace trimming) in the tool description.
 
 - Safety: `annotations` — Validation-equivalent, but may drop annotation text the model could use.
 - Enabled by: `--level annotations`

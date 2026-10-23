@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `SL104 dedupe-descriptions`: lossy annotation rule that drops property descriptions repeated verbatim in the tool description.
+
 ## [0.1.0] - 2026-10-23
 
 ### Added

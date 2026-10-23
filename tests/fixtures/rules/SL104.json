@@ -1,0 +1,44 @@
+[
+  {
+    "name": "property description repeated in the tool description is dropped",
+    "tool": {
+      "name": "t",
+      "description": "Search books. q is the free-text query. limit is how many rows to return.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "q": {"type": "string", "description": "is the free-text query"},
+          "limit": {"type": "integer", "description": "is how many rows to return"}
+        }
+      }
+    },
+    "expected_schema": {
+      "type": "object",
+      "properties": {
+        "q": {"type": "string"},
+        "limit": {"type": "integer"}
+      }
+    }
+  },
+  {
+    "name": "a partial match keeps the property description",
+    "tool": {
+      "name": "t",
+      "description": "Search books.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "q": {"type": "string", "description": "is the free-text query"}
+        }
+      }
+    }
+  },
+  {
+    "name": "properties without descriptions are unchanged",
+    "tool": {
+      "name": "t",
+      "description": "Search books.",
+      "schema": {"type": "object", "properties": {"q": {"type": "string"}}}
+    }
+  }
+]
