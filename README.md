@@ -32,8 +32,6 @@ pip install "toolism[mcp]"          # + read tools straight from an MCP server
 pip install "toolism[all]"          # everything, incl. Anthropic's exact token counter
 ```
 
-> Not on PyPI yet? Use `pip install "toolism[all] @ git+https://github.com/rakeshnitb23/toolism"`.
-
 ## 30-second tour
 
 **Measure** what your tools cost (OpenAI, Anthropic and MCP JSON are detected automatically):
@@ -75,6 +73,9 @@ Point it at a live MCP server instead of a file with `--mcp`:
 ```console
 $ toolism measure --mcp "npx -y @modelcontextprotocol/server-github"
 ```
+
+`--mcp` runs that command exactly as your shell would, with your environment, so only point it
+at servers you would run anyway. See [SECURITY.md](SECURITY.md).
 
 **Gate** it in CI against a committed baseline:
 
@@ -177,7 +178,20 @@ client.messages.create(model=..., tools=tools, messages=...)
 ```
 
 `slim_tools` is cached by input and returns fresh objects each call. See
-[examples/agent_startup.py](examples/agent_startup.py).
+[examples/agent_startup.py](examples/agent_startup.py) (Anthropic SDK) and
+[examples/openai_startup.py](examples/openai_startup.py) (OpenAI SDK).
+
+### Stability
+
+The public API is every name in `toolism.__all__` (functions such as `load`, `measure`, `slim`
+and `slim_tools`, plus the models and errors), the CLI commands and their options, the exit codes,
+and the GitHub Action's inputs and outputs. Anything under a leading underscore or not exported
+from `toolism` is internal and can change at any time.
+
+Before 1.0, a minor release (0.x → 0.y) may change the public API, but only after the old
+behaviour has been deprecated with a warning for at least one minor release, and every such change
+is listed in the [CHANGELOG](CHANGELOG.md). Patch releases never change it. Rule ids are never
+reused, and a rule's safety level never becomes less safe.
 
 ## GitHub Action
 
@@ -233,6 +247,10 @@ The hook runs whenever a matching file is staged. Create the baseline once with
 | `heuristic` | offline, no dependencies; within ~3% of o200k on the benchmark |
 | `anthropic:<model>` | exact counts from Anthropic's `count_tokens` API (needs `ANTHROPIC_API_KEY`) |
 
+The default tokenizer downloads its vocabulary file (a few MB) once on first use. Offline, behind
+a proxy that blocks it, or in locked-down CI, use `-t heuristic`, or download it once and point
+`TIKTOKEN_CACHE_DIR` at the cache (in GitHub Actions, cache that directory with `actions/cache`).
+
 Counts are taken on a provider-neutral rendering of each tool. Providers wrap tools in their own
 prompt format, which adds overhead per tool that no schema change can remove. Reports always name
 the tokenizer and say whether the count is approximate. Set a default with `TOOLISM_TOKENIZER`.
@@ -249,6 +267,12 @@ the tokenizer and say whether the count is approximate. Set a default with `TOOL
   toolism cuts the cost of each tool you do send.
 
 ## FAQ
+
+**How much money does this save?** Tokens saved per request × requests ÷ 1,000,000 × your
+model's input price per million tokens. For the three tools in the tour above (245 tokens saved
+per request), an agent making 1M requests a month on a model priced at, say, $3 per million input
+tokens saves 245 × $3 = $735 a month. Use `-t anthropic:<model>` for exact Claude counts, and
+check your provider's current prices.
 
 **Doesn't prompt caching make this pointless?** No, it makes it cheaper. Cached tokens still fill
 the context window, any change to the tool list misses the cache, and on Anthropic cache writes
