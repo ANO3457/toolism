@@ -220,7 +220,7 @@ def test_load_with_cwd_and_env(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     toolset = loader.load_mcp_stdio(
-        f"{sys.executable} env_server.py", cwd=tmp_path, env={"TOOL_NAME": "probe"}, timeout=60
+        [sys.executable, "env_server.py"], cwd=tmp_path, env={"TOOL_NAME": "probe"}, timeout=60
     )
     assert [t.name for t in toolset.tools] == [f"probe_{tmp_path.name}"]
 
