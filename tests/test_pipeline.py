@@ -398,3 +398,28 @@ def test_thousand_tools_are_fast() -> None:
     assert report.tool_count == 1000
     assert report.saved > 0
     assert elapsed < 5, f"slimming 1000 tools took {elapsed:.1f}s"
+
+
+@pytest.mark.skipif(not verify_available(), reason="verify extra not installed")
+def test_verification_does_not_change_the_output_or_the_input() -> None:
+    import copy
+
+    shared = {"type": "object", "properties": {"n": {"type": "string", "title": "N"}}}
+    schema = {
+        "type": "object",
+        "properties": {
+            "a": {"type": "array", "items": {"$ref": "#/$defs/X"}, "title": "A"},
+            "c": {"type": "object", "additionalProperties": True},  # SL008: forces sampling
+            "b": {"$ref": "#/$defs/X"},
+        },
+        "$defs": {"X": shared},
+    }
+    ts = toolset({"name": "t", "description": "d", "inputSchema": schema})
+    pristine = copy.deepcopy(ts.tools[0].input_schema)
+    plain = slim(ts, tokenizer=H)
+    verified = slim(ts, tokenizer=H, verify=True)
+    assert verified.toolset.tools[0].input_schema == plain.toolset.tools[0].input_schema
+    assert "$ref" in str(verified.toolset.tools[0].input_schema)  # refs are not expanded
+    assert ts.tools[0].input_schema == pristine
+    assert verified.report.after == plain.report.after
+    assert verified.report.verification[0].method == "sampled"
