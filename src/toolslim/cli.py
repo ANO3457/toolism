@@ -28,7 +28,7 @@ EXIT_OK = 0
 EXIT_FAILED = 1
 EXIT_ERROR = 2
 EXIT_TOKENIZER = 3
-ISSUES_URL = "https://github.com/sudheer215s/toolslim/issues"
+ISSUES_URL = "https://github.com/rakeshnitb23/toolism/issues"
 DEFAULT_WIDTH = 100
 
 

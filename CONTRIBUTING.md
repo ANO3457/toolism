@@ -9,7 +9,7 @@ wrong.
 You need [uv](https://docs.astral.sh/uv/) and Python 3.10+.
 
 ```bash
-git clone https://github.com/sudheer215s/toolslim && cd toolslim
+git clone https://github.com/rakeshnitb23/toolism && cd toolslim
 uv sync --all-extras          # creates .venv with toolslim, all extras and dev tools
 uv run toolslim --version
 ```
@@ -136,8 +136,8 @@ Each of these makes a good first issue:
 2. Commit, tag `vX.Y.Z` and push the tag. The `Release` workflow checks that the tag matches
    `__version__`, builds, publishes to PyPI with trusted publishing, and creates the GitHub
    release from the CHANGELOG.
-3. The GitHub Action is versioned by the same tag (`uses: sudheer215s/toolslim@vX.Y.Z`).
+3. The GitHub Action is versioned by the same tag (`uses: rakeshnitb23/toolism@vX.Y.Z`).
 
-**One-time setup.** On pypi.org, add a trusted publisher: owner `sudheer215s`, repository
-`toolslim`, workflow `release.yml`, environment `pypi`. Then create a `pypi` environment in the
+**One-time setup.** On pypi.org, add a trusted publisher: owner `rakeshnitb23`, repository
+`toolism`, workflow `release.yml`, environment `pypi`. Then create a `pypi` environment in the
 repository settings. No API token is stored anywhere.

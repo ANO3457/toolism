@@ -24,7 +24,7 @@ All notable changes to this project are documented here. The format follows
   `anthropic:<model>` via the `count_tokens` API.
 - Python API: `load`, `parse`, `measure`, `slim`, `dump`, `slim_tools` (cached, for agent
   code), `list_rules`, `load_mcp_stdio`.
-- GitHub Action (`uses: sudheer215s/toolslim@v0.1.0`) with `status`, `total`, `delta` and
+- GitHub Action (`uses: rakeshnitb23/toolism@v0.1.0`) with `status`, `total`, `delta` and
   `summary-file` outputs.
 - Benchmark on 14 real tool sets (159 tools): 37.4% fewer tokens in total, median 11.3% per tool
   set, with zero equivalence counterexamples.

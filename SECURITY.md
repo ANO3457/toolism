@@ -3,7 +3,7 @@
 ## Reporting a vulnerability
 
 Please report vulnerabilities privately through
-[GitHub security advisories](https://github.com/sudheer215s/toolslim/security/advisories/new),
+[GitHub security advisories](https://github.com/rakeshnitb23/toolism/security/advisories/new),
 not in public issues. You can expect an acknowledgement within a few days and a fix or a
 mitigation plan within 30 days for confirmed issues.
 

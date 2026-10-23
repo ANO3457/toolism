@@ -1,6 +1,6 @@
 # toolslim
 
-[![CI](https://github.com/sudheer215s/toolslim/actions/workflows/ci.yml/badge.svg)](https://github.com/sudheer215s/toolslim/actions/workflows/ci.yml)
+[![CI](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml/badge.svg)](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -31,7 +31,7 @@ pip install "toolslim[mcp]"          # + read tools straight from an MCP server
 pip install "toolslim[all]"          # everything, incl. Anthropic's exact token counter
 ```
 
-> Not on PyPI yet? Use `pip install "toolslim[all] @ git+https://github.com/sudheer215s/toolslim"`.
+> Not on PyPI yet? Use `pip install "toolslim[all] @ git+https://github.com/rakeshnitb23/toolism"`.
 
 ## 30-second tour
 
@@ -189,7 +189,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: toolslim
-        uses: sudheer215s/toolslim@v0.1.0
+        uses: rakeshnitb23/toolism@v0.1.0
         with:
           source: tools.json                  # or: mcp: "npx -y @your/mcp-server"
           baseline: .toolslim/baseline.json

@@ -1,6 +1,6 @@
 name: toolslim check
 description: Fail a pull request when your LLM tool or MCP schemas cost more tokens than your budget.
-author: sudheer215s
+author: rakeshnitb23
 branding:
   icon: scissors
   color: green

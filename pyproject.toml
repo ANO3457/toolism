@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
-authors = [{ name = "sudheer215s" }]
+authors = [{ name = "Rakesh Singh" }]
 keywords = ["llm", "mcp", "tokens", "json-schema", "agents", "function-calling", "cost"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -43,10 +43,10 @@ all = ["toolslim[verify,mcp,anthropic]"]
 toolslim = "toolslim.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/sudheer215s/toolslim"
-Repository = "https://github.com/sudheer215s/toolslim"
-Issues = "https://github.com/sudheer215s/toolslim/issues"
-Changelog = "https://github.com/sudheer215s/toolslim/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/rakeshnitb23/toolism"
+Repository = "https://github.com/rakeshnitb23/toolism"
+Issues = "https://github.com/rakeshnitb23/toolism/issues"
+Changelog = "https://github.com/rakeshnitb23/toolism/blob/master/CHANGELOG.md"
 
 [dependency-groups]
 dev = [

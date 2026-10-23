@@ -44,7 +44,7 @@ On tag `v*`:
 3. `pypa/gh-action-pypi-publish` with `id-token: write`, in environment `pypi` (trusted publishing — no API token stored).
 4. GitHub Release with notes from `CHANGELOG.md`.
 
-**One-time manual step for the maintainer** (documented in CONTRIBUTING): add a trusted publisher on pypi.org — owner `sudheer215s`, repo `toolslim`, workflow `release.yml`, environment `pypi`.
+**One-time manual step for the maintainer** (documented in CONTRIBUTING): add a trusted publisher on pypi.org — owner `rakeshnitb23`, repo `toolism`, workflow `release.yml`, environment `pypi`.
 
 ## Review
 
