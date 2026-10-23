@@ -194,6 +194,9 @@ behaviour has been deprecated with a warning for at least one minor release, and
 is listed in the [CHANGELOG](CHANGELOG.md). Patch releases never change it. Rule ids are never
 reused, and a rule's safety level never becomes less safe.
 
+To print the before/after token saving for a file of tools (offline, heuristic
+tokenizer), see [examples/measure_savings.py](examples/measure_savings.py).
+
 ## GitHub Action
 
 ```yaml
