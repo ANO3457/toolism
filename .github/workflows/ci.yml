@@ -21,8 +21,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.12"
           enable-cache: true
@@ -33,8 +33,8 @@ jobs:
   types:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.12"
           enable-cache: true
@@ -55,13 +55,13 @@ jobs:
           - os: windows-latest
             python: "3.12"
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
           enable-cache: true
       - name: Cache tiktoken vocabulary
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.TIKTOKEN_CACHE_DIR }}
           key: tiktoken-${{ runner.os }}-v1
@@ -72,8 +72,8 @@ jobs:
     name: bench equivalence (real servers)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.12"
           enable-cache: true
@@ -84,7 +84,7 @@ jobs:
     name: dogfood (our own action)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: toolism
         uses: ./
         with:
