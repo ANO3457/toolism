@@ -229,7 +229,7 @@ See [ARCHITECTURE_REVIEW.md](ARCHITECTURE_REVIEW.md) for the reasoning behind ea
 - **Fixpoint** — passes repeat until nothing changes, max 3, with a warning if the cap is hit. (R4)
 - **Tokenizer honesty** — tokenizer name and approximate flag on every report and baseline. Default overridable with `TOOLISM_TOKENIZER`. No silent fallback; exit 3. `check` rejects a tokenizer mismatch unless `--allow-tokenizer-change`. (R5, R6)
 - **Verification** — runs only on changed tools; 50 examples by default; deterministic; `skipped` is reported, never treated as a pass. (R7)
-- **Rollback** — on a counterexample, the whole tool is restored. `slim --fail-on-rollback` exits 1. This replaces the `--strict-verify` flag from section 10. (R8)
+- **Rollback** — on a counterexample, the rules that changed the tool are added back one at a time (in id order) and each result is re-verified; rules whose result has a counterexample are reverted and the rest are kept. If no single rule is found, the whole tool is restored. `slim --fail-on-rollback` exits 1. This replaces the `--strict-verify` flag from section 10. (R8)
 - **Inputs are never mutated** — asserted with `ToolDef.fingerprint()`. (R9)
 - **Round-trip** — `serialize(parse(x)) == x` for all fixtures and snapshots. (R10)
 - **Layering** — enforced by an AST import test. (R11)
