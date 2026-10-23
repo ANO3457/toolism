@@ -183,10 +183,10 @@ client.messages.create(model=..., tools=tools, messages=...)
 
 ### Stability
 
-The public API is what `toolism` exports at the top level (`load`, `parse`, `measure`, `slim`,
-`dump`, `dumps`, `slim_tools`, `list_rules`, the models and the errors), the CLI commands and
-their options, the exit codes, and the GitHub Action's inputs and outputs. Anything under a
-leading underscore or not re-exported from `toolism` is internal and can change at any time.
+The public API is every name in `toolism.__all__` (functions such as `load`, `measure`, `slim`
+and `slim_tools`, plus the models and errors), the CLI commands and their options, the exit codes,
+and the GitHub Action's inputs and outputs. Anything under a leading underscore or not exported
+from `toolism` is internal and can change at any time.
 
 Before 1.0, a minor release (0.x → 0.y) may change the public API, but only after the old
 behaviour has been deprecated with a warning for at least one minor release, and every such change
