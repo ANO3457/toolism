@@ -11,6 +11,7 @@ All notable changes to this project are documented here. The format follows
 - `examples/openai_startup.py`: `slim_tools` with the OpenAI SDK.
 - README: offline use of the default tokenizer, a security note on `--mcp`, a cost estimate
   in the FAQ, and a Stability section defining the public API and the deprecation policy.
+- `SL103 drop-titles`: opt-in annotation-level rule that removes schema `title` keywords.
 - pre-commit hook `toolism-check` (`.pre-commit-hooks.yaml`), the same budget gate as
   `toolism check`, run before each commit.
 

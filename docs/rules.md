@@ -20,6 +20,7 @@ annotations and run with `--level annotations`. Turn any rule on or off with `--
 | [`SL009`](#sl009-schema-uri) | schema-uri | safe | default |
 | [`SL101`](#sl101-max-description-length) | max-description-length | annotations | `--level annotations` |
 | [`SL102`](#sl102-drop-examples) | drop-examples | annotations | `--level annotations` |
+| [`SL103`](#sl103-drop-titles) | drop-titles | annotations | `--level annotations` |
 
 ## SL001 redundant-title
 
@@ -149,6 +150,17 @@ opt-in. Tool-level descriptions are only truncated with `include_tool=true`.
 
 Examples are annotations: dropping them never changes validation, but they can help the
 model produce well-formed arguments — measure before and after on your own evals.
+
+- Safety: `annotations` — Validation-equivalent, but may drop annotation text the model could use.
+- Enabled by: `--level annotations`
+
+## SL103 drop-titles
+
+**Drop all schema title annotations.**
+
+`title` is an annotation keyword, so removing it never changes validation. This lossy
+rule is for users who prefer smaller schemas over retaining display labels. Property names are
+schema keys rather than `title` keywords and are therefore never removed.
 
 - Safety: `annotations` — Validation-equivalent, but may drop annotation text the model could use.
 - Enabled by: `--level annotations`
