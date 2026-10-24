@@ -26,6 +26,38 @@ You don't need to be assigned. Pick an issue and open a pull request.
 - A bot answers questions on these issues with the rules above, and notes on a PR when another
   open PR already targets the same issue. It never closes anything; maintainers decide.
 
+## Points and levels
+
+Contributions earn points on the [🏆 Contributor leaderboard](https://github.com/rakeshnitb23/toolism/issues?q=is%3Aissue+is%3Aopen+%22Contributor+leaderboard%22+in%3Atitle),
+which a bot updates whenever a PR is merged (and every Monday). When your PR is merged, the bot
+comments on it with the points you earned, your rank and your level. The top 10 this month also
+appear on the README. There's a monthly board, so newcomers always have a race they can win, and
+an all-time one.
+
+| Contribution | Points |
+| --- | ---: |
+| Merged PR that closes a **help wanted** issue | 30 |
+| Merged PR that closes a **good first issue** | 10 |
+| Any other merged PR | 5 |
+| Your first merged PR ever | +5 bonus |
+| A **written** review of someone else's PR (one per PR) | 3 |
+| A bug report a maintainer confirms (labelled `bug`, closed as completed) | 5 |
+| A maintainer bonus for standout work (a `points: +N` label on the PR) | +N |
+
+- **Only merged or confirmed work counts.** Closed, duplicate and unmerged PRs score nothing.
+- **Points follow the issue's label, not the size of the change**, so splitting or padding a PR
+  earns nothing extra. Link the issue with `Closes #N` so the bot can find its label.
+- **A review needs words.** A bare "Approve" with no text doesn't count; say what you checked.
+- Bots aren't counted, and maintainers are listed separately rather than ranked.
+
+| Level | Reached at |
+| --- | --- |
+| 🌱 Newcomer | 1 merged PR |
+| 🔧 Contributor | 3 merged PRs |
+| ⭐ Regular | 5 merged PRs (time to move from good first issues to help wanted) |
+| 🏅 Core | 10 merged PRs and 10 reviews (maintainers look here first when inviting new maintainers) |
+| 👋 Supporter | Reviews or bug reports, no merged PR yet |
+
 ## Development setup
 
 You need [uv](https://docs.astral.sh/uv/) and Python 3.10+.
