@@ -88,6 +88,7 @@ def token_report_to_dict(report: TokenReport) -> dict[str, Any]:
             for t in report.tools
         ],
         "uncounted": list(report.uncounted),
+        "warnings": list(report.warnings),
     }
 
 
@@ -102,7 +103,7 @@ def render_token_report(
         f"{_n(report.total)} tokens across {report.tool_count} tools "
         f"(average {report.average:,.0f}) — {_tokenizer_note(report.tokenizer, report.approximate)}"
     )
-    notes = []
+    notes = [f"Warning: {w}" for w in report.warnings]
     if hidden:
         notes.append(f"… {len(hidden)} more tools ({_n(sum(t.tokens for t in hidden))} tokens)")
     if report.uncounted:
