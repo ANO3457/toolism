@@ -156,8 +156,8 @@ Each of these makes a good first issue:
 
 ## Releasing (maintainers)
 
-1. Set `__version__` in `src/toolism/__about__.py` and move the CHANGELOG's `Unreleased`
-   section under the new version.
+1. Set `__version__` in `src/toolism/__about__.py`, move the CHANGELOG's `Unreleased`
+   section under the new version, and update the compare links at the end of `CHANGELOG.md`.
 2. Commit, tag `vX.Y.Z` and push the tag. The `Release` workflow checks that the tag matches
    `__version__`, builds, publishes to PyPI with trusted publishing, and creates the GitHub
    release from the CHANGELOG.
