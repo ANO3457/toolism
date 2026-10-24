@@ -20,8 +20,8 @@ on:
 
 permissions:
   contents: write       # the `leaderboard` branch (README card)
-  issues: write         # the leaderboard issue and PR comments
-  pull-requests: read
+  issues: write         # the leaderboard issue
+  pull-requests: write  # comments on merged PRs (issues: write alone is a 403 on a PR)
 
 concurrency:
   group: leaderboard
