@@ -50,9 +50,14 @@ def toolset(*items: dict[str, Any]) -> ToolSet:
 
 def test_select_rules_by_level_enable_disable() -> None:
     safe = [r.id for r in select_rules("safe")]
-    assert safe == ["SL001", "SL002", "SL003", "SL004", "SL005", "SL006", "SL008", "SL009"]
+    assert safe == ["SL001", "SL002", "SL003", "SL004", "SL005", "SL006", "SL008", "SL009", "SL010"]
     annotations = [r.id for r in select_rules("annotations")]
-    assert annotations == [*safe, "SL101", "SL102"]  # the level is the gate for lossy rules
+    assert annotations == [
+        *safe,
+        "SL101",
+        "SL102",
+        "SL103",
+    ]  # the level is the gate for lossy rules
     assert "SL101" in [r.id for r in select_rules("safe", enable=["max-description-length"])]
     assert "SL001" not in [r.id for r in select_rules("safe", disable=["SL001"])]
     assert "SL007" in [r.id for r in select_rules(Safety.SAFE, enable=["SL007"])]
