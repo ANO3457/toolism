@@ -36,6 +36,7 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- `toolism diff` now reports `No changes.` on stderr when the rendered diff is empty.
 - `toolism measure` now preserves duplicate tool name warnings in table, Markdown and JSON output.
 - `--verify` no longer rewrites the schemas it checks. hypothesis-jsonschema resolves `$ref`s in
   place, so with `--verify` the slimmed output could come back with `$ref`s expanded (more tokens
