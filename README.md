@@ -77,6 +77,18 @@ $ toolism measure --mcp "npx -y @modelcontextprotocol/server-github"
 `--mcp` runs that command exactly as your shell would, with your environment, so only point it
 at servers you would run anyway. See [SECURITY.md](SECURITY.md).
 
+**Preview** what slimming changes, as a unified diff per changed tool:
+
+```bash
+toolism diff examples/mcp_tools.json
+toolism diff examples/mcp_tools.json --level annotations -o tools.diff
+```
+
+The preview shows normalized JSON for each tool's name, description and input schema.
+Unchanged tools are omitted; a tool-order change alone produces no diff. `--level`,
+`--enable`, `--disable` and `--option` select the same rewrites as `slim`. The preview runs
+locally without a reporting-tokenizer call. Use `-` for stdin and `--output` to write a file.
+
 **Gate** it in CI against a committed baseline:
 
 ```console
