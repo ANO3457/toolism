@@ -329,6 +329,10 @@ New rules, tokenizers and formats are welcome. A rule is one small module plus a
 see [CONTRIBUTING.md](CONTRIBUTING.md) for the 3-step guide and a list of ideas. Everyone taking
 part is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
+Merged PRs, reviews and confirmed bug reports earn points on the
+[🏆 contributor leaderboard](https://github.com/rakeshnitb23/toolism/issues?q=is%3Aissue+is%3Aopen+%22Contributor+leaderboard%22+in%3Atitle);
+see [Points and levels](CONTRIBUTING.md#points-and-levels).
+
 ## License
 
 [MIT](LICENSE)
