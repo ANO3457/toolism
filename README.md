@@ -263,6 +263,9 @@ The hook runs whenever a matching file is staged. Create the baseline once with
 | `heuristic` | offline, no dependencies; within ~3% of o200k on the benchmark |
 | `anthropic:<model>` | exact counts from Anthropic's `count_tokens` API (needs `ANTHROPIC_API_KEY`) |
 
+For machine-readable reports, see [JSON output](docs/json-output.md): `measure -f json`,
+`slim -r json`, and `check -f json` share the versioned `toolism_report: 1` format.
+
 The default tokenizer downloads its vocabulary file (a few MB) once on first use. Offline, behind
 a proxy that blocks it, or in locked-down CI, use `-t heuristic`, or download it once and point
 `TIKTOKEN_CACHE_DIR` at the cache (in GitHub Actions, cache that directory with `actions/cache`).
