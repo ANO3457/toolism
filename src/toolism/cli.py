@@ -372,6 +372,10 @@ def diff(
         typer.Option("--option", metavar="RULE.KEY=VALUE", help="Set a rule option. Repeatable."),
     ] = None,
     output: OutputOpt = None,
+    exit_code: Annotated[
+        bool,
+        typer.Option("--exit-code", help="Exit 1 if any tool would change, 0 otherwise."),
+    ] = False,
 ) -> None:
     """Preview per-tool changes as a unified diff; omit unchanged tools."""
     from toolism.pipeline import slim as slim_toolset
@@ -391,9 +395,12 @@ def diff(
         options=options,
         tokenizer="heuristic",
     )
-    _emit(render_tool_diff(toolset, result.toolset), output)
+    diff_text = render_tool_diff(toolset, result.toolset)
+    _emit(diff_text, output)
     for warning in result.report.warnings:
         typer.echo(f"Warning: {warning}", err=True)
+    if exit_code and diff_text:
+        raise typer.Exit(EXIT_FAILED)
 
 
 @app.command()

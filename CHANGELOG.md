@@ -8,6 +8,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `toolism diff` gains an `--exit-code` flag that exits 1 when any tool would change,
+  making it easy to gate on unslimmed schemas in CI.
 - SL010 `single-allof` collapses single-branch `allOf` wrappers when their keywords can be
   merged without changing validation. Strict tools and uncertain dialect or reference scopes
   are left alone.
