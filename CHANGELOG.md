@@ -12,6 +12,8 @@ All notable changes to this project are documented here. The format follows
   merged without changing validation. Strict tools and uncertain dialect or reference scopes
   are left alone.
 
+- `toolism diff`: per-tool unified previews of changed descriptions and input schemas,
+  with the same level/rule selection as `slim`, stdin and output-file support.
 - `examples/openai_startup.py`: `slim_tools` with the OpenAI SDK.
 - README: offline use of the default tokenizer, a security note on `--mcp`, a cost estimate
   in the FAQ, and a Stability section defining the public API and the deprecation policy.
@@ -63,3 +65,7 @@ All notable changes to this project are documented here. The format follows
   `summary-file` outputs.
 - Benchmark on 14 real tool sets (159 tools): 37.4% fewer tokens in total, median 11.3% per tool
   set, with zero equivalence counterexamples.
+
+[Unreleased]: https://github.com/rakeshnitb23/toolism/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/rakeshnitb23/toolism/releases/tag/v0.1.0
+
