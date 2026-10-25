@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from rich.text import Text
 from typer.testing import CliRunner
 
 from toolism import cli
@@ -519,12 +520,23 @@ def test_main_switches_non_utf8_streams_to_utf8(monkeypatch: pytest.MonkeyPatch)
 # ---------------------------------------------------------------------- diff
 
 
-def test_diff_mcp_options_in_help(runner: CliRunner) -> None:
-    result = invoke(runner, "diff", "--help")
+@pytest.mark.parametrize("forced_color", [False, True])
+def test_diff_mcp_options_in_help(
+    runner: CliRunner, monkeypatch: pytest.MonkeyPatch, forced_color: bool
+) -> None:
+    from typer import rich_utils
+
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setattr(rich_utils, "FORCE_TERMINAL", forced_color)
+    monkeypatch.setattr(rich_utils, "COLOR_SYSTEM", "standard" if forced_color else None)
+    result = invoke(runner, "diff", "--help", color=True)
     assert result.exit_code == 0
-    assert "--mcp" in result.stdout
-    assert "--mcp-timeout" in result.stdout
-    assert "[SOURCE]" in result.stdout
+    assert ("\x1b[" in result.stdout) == forced_color
+    # Rich can style the leading dashes separately from the rest of an option.
+    help_text = Text.from_ansi(result.stdout).plain
+    assert "--mcp" in help_text
+    assert "--mcp-timeout" in help_text
+    assert "[SOURCE]" in help_text
 
 
 @pytest.mark.parametrize("source", [MCP_TOOLS, "-"])
