@@ -190,11 +190,12 @@ toolism check   SOURCE --baseline FILE [--max-increase 10%|500] [--max-total N] 
                         [--format table|json|markdown] [--output FILE] [--summary-md FILE]
 toolism rules   [--format table|json|markdown] [--output FILE]
 
-toolism diff    SOURCE [--level safe|annotations] [--enable ID]... [--disable ID]...
+toolism diff    [SOURCE] [--level safe|annotations] [--enable ID]... [--disable ID]...
                         [--option ID.key=value]... [--output FILE]
+                        [--mcp COMMAND] [--mcp-timeout SECONDS]
 ```
 
-`measure`, `slim` and `check` also take `--mcp COMMAND` and `--mcp-timeout SECONDS` in place of
+`measure`, `slim`, `diff` and `check` take `--mcp COMMAND` and `--mcp-timeout SECONDS` in place of
 `SOURCE`. `toolism --help` and `toolism <command> --help` are the authoritative reference.
 
 - `SOURCE` is a JSON file, `-` for stdin, or `--mcp "<command>"` for a live stdio server.

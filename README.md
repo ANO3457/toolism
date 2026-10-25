@@ -83,12 +83,15 @@ at servers you would run anyway. See [SECURITY.md](SECURITY.md).
 ```bash
 toolism diff examples/mcp_tools.json
 toolism diff examples/mcp_tools.json --level annotations -o tools.diff
+toolism diff --mcp "python my_server.py" --mcp-timeout 30
 ```
 
 The preview shows normalized JSON for each tool's name, description and input schema.
 Unchanged tools are omitted; a tool-order change alone produces no diff. `--level`,
 `--enable`, `--disable` and `--option` select the same rewrites as `slim`. The preview runs
 locally without a reporting-tokenizer call. Use `-` for stdin and `--output` to write a file.
+Use `--mcp COMMAND` instead of a file to preview a live stdio server; `--mcp-timeout SECONDS`
+sets the server timeout (60 seconds by default).
 
 **Gate** it in CI against a committed baseline:
 

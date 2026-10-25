@@ -354,7 +354,9 @@ def slim(
 @app.command()
 @_handle_errors
 def diff(
-    source: SourceArg,
+    source: SourceArg = None,
+    mcp: McpOpt = None,
+    mcp_timeout: McpTimeoutOpt = 60.0,
     level: Annotated[
         Level,
         typer.Option("--level", "-l", help="safe: redundant text; annotations: also lossy text."),
@@ -382,7 +384,7 @@ def diff(
     for assignment in option or []:
         rule_key, key, value = parse_option_assignment(assignment)
         options.setdefault(rule_key, {})[key] = value
-    toolset = _load(source, None, 60.0)
+    toolset = _load(source, mcp, mcp_timeout)
     result = slim_toolset(
         toolset,
         level=level.value,

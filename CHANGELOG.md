@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `toolism diff --mcp COMMAND` previews a live stdio server's tools, with the same
+  `--mcp-timeout SECONDS` and input validation as `measure`, `slim` and `check` (#95).
+
 - SL010 `single-allof` collapses single-branch `allOf` wrappers when their keywords can be
   merged without changing validation. Strict tools and uncertain dialect or reference scopes
   are left alone.
