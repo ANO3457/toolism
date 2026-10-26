@@ -45,6 +45,13 @@ def _constant(text: str) -> None:
     raise ValueError("nonstandard JSON constant")
 
 
+def _checksum(created: int, entries: dict[str, int]) -> str:
+    encoded = json.dumps(
+        {"version": 1, "created": created, "entries": entries}, separators=(",", ":")
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 class SnapshotCache:
     """One fixed-lifetime generation, containing only digests and nonnegative integers."""
 
@@ -107,7 +114,12 @@ class SnapshotCache:
 
     def _encode(self) -> bytes:
         return json.dumps(
-            {"version": 1, "created": self._created, "entries": self._entries},
+            {
+                "version": 1,
+                "created": self._created,
+                "entries": self._entries,
+                "checksum": _checksum(self._created, self._entries),
+            },
             separators=(",", ":"),
         ).encode("utf-8")
 
@@ -132,7 +144,7 @@ class SnapshotCache:
                 parse_int=_integer,
                 parse_constant=_constant,
             )
-            if type(data) is not dict or set(data) != {"version", "created", "entries"}:
+            if type(data) is not dict or set(data) != {"version", "created", "entries", "checksum"}:
                 return
             if type(data["version"]) is not int or data["version"] != 1:
                 return
@@ -151,6 +163,9 @@ class SnapshotCache:
                 or not 0 <= value <= _MAX_COUNT
                 for key, value in entries.items()
             ):
+                return
+            checksum = data["checksum"]
+            if type(checksum) is not str or checksum != _checksum(created, entries):
                 return
             self._entries = entries
             self._created = created

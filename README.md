@@ -284,7 +284,8 @@ counting recipe causes the corresponding misses. Missing, invalid, expired or ev
 are counted normally; provider errors retain their existing behavior.
 
 The directory contains one `toolism-token-counts-v1.json` snapshot with hashed identities,
-integer counts and generation metadata, not tool/schema/credential plaintext. It is capped at
+integer counts, generation metadata and an integrity checksum, not tool/schema/credential plaintext.
+The checksum detects accidental corruption, including changes that remain valid JSON. It is capped at
 4,096 entries and 1 MiB, with oldest-write eviction and a fixed 24-hour generation lifetime.
 Hits and rewrites do not renew that lifetime. Counts can be stale within it; this lifetime is a
 cache policy, not a provider stability guarantee. To clear it, stop active runs, remove that
@@ -296,7 +297,7 @@ new cache hits and repeat requests; they do not merge updates or coordinate cold
 The size bound covers the published snapshot, not simultaneous temporary files or abandoned
 crash leftovers. Cache filesystem failures are misses, and replacement is not a guarantee of
 power-loss durability. Use a trusted cache directory: digests identify requests, but do not
-authenticate stored numeric values.
+authenticate stored numeric values: someone controlling the cache can recalculate its checksum.
 
 For GitHub Actions, use a new save key for refreshed snapshots because cache archives are
 immutable. For example, in a workflow that already installs its locked toolism dependencies:

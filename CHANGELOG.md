@@ -9,7 +9,7 @@ All notable changes to this project are documented here. The format follows
 ### Added
 
 - Opt-in persistent Anthropic token-count caching via `TOOLISM_CACHE_DIR`, including baseline,
-  probe, marginal and ordered aggregate counts. Bounded, validated snapshots use atomic
+  probe, marginal and ordered aggregate counts. Bounded, checksummed snapshots use atomic
   replacement and fixed 24-hour generations; README documents clearing and Actions cache use.
 - SL010 `single-allof` collapses single-branch `allOf` wrappers when their keywords can be
   merged without changing validation. Strict tools and uncertain dialect or reference scopes

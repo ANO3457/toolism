@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import sys
@@ -204,17 +205,24 @@ def test_snapshot_strict_validation_and_recovery(tmp_path: Path) -> None:
     valid = SnapshotCache(tmp_path, "context", clock=lambda: 1000.0)
     key = valid.key("marginal", "payload")
     assert key is not None
+
+    def document(value: Any, *, created: Any = 1000, version: Any = 1) -> bytes:
+        data = {"version": version, "created": created, "entries": {key: value}}
+        checksum = hashlib.sha256(json.dumps(data, separators=(",", ":")).encode()).hexdigest()
+        return json.dumps({**data, "checksum": checksum}).encode()
+
     bad = [
         b"",
         b"{",
         b"\xff",
         b"[]",
         b'{"version":1,"version":1}',
-        json.dumps({"version": 1, "created": 2000, "entries": {key: 1}}).encode(),
-        *[
-            json.dumps({"version": 1, "created": 1000, "entries": {key: value}}).encode()
-            for value in [True, -1, 1.2, "1", 2**64]
-        ],
+        json.dumps({"version": 1, "created": 1000, "entries": {key: 1}}).encode(),
+        document(1, created=2000),
+        document(1, created=True),
+        document(1, version=True),
+        document(1, version=2),
+        *[document(value) for value in [True, -1, 1.2, "1", 2**64, float("nan"), float("inf")]],
         b'{"version":1,"created":1000,"entries":{"' + key.encode() + b'":NaN}}',
         b'{"version":1,"created":1000,"entries":{"' + key.encode() + b'":' + b"9" * 100 + b"}}",
         b"[" * 2000 + b"]" * 2000,
@@ -225,6 +233,30 @@ def test_snapshot_strict_validation_and_recovery(tmp_path: Path) -> None:
         assert fresh.get(key) is None
         fresh.put(key, 0)
         assert SnapshotCache(tmp_path, "context", clock=lambda: 1000.0).get(key) == 0
+
+
+@pytest.mark.parametrize("mutation", ["digit", "created", "order"])
+def test_checksum_rejects_well_formed_corruption(tmp_path: Path, mutation: str) -> None:
+    from toolism.tokenizers._cache import SnapshotCache
+
+    cache = SnapshotCache(tmp_path, "context", clock=lambda: 1000.0)
+    key = cache.key("marginal", "one")
+    other = cache.key("marginal", "two")
+    cache.put(key, 100)
+    cache.put(other, 200)
+    original = cache.path.read_bytes()
+    if mutation == "digit":
+        changed = original.replace(f'"{key}":100'.encode(), f'"{key}":101'.encode())
+    else:
+        data = json.loads(original)
+        if mutation == "created":
+            data["created"] -= 1
+        else:
+            data["entries"] = dict(reversed(list(data["entries"].items())))
+        changed = json.dumps(data).encode()
+    assert changed != original
+    cache.path.write_bytes(changed)
+    assert SnapshotCache(tmp_path, "context", clock=lambda: 1000.0).get(key) is None
 
 
 def test_snapshot_bounds_expiry_and_namespace(
@@ -582,7 +614,7 @@ def test_concurrent_readers_see_complete_snapshots(tmp_path: Path) -> None:
                 data = json.loads(cache.path.read_bytes())
             except OSError:
                 continue
-            assert set(data) == {"version", "created", "entries"}
+            assert set(data) == {"version", "created", "entries", "checksum"}
             assert all(type(v) is int for v in data["entries"].values())
             samples += 1
             ready.set()
