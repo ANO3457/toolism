@@ -173,7 +173,8 @@ Each of these makes a good first issue:
 - **HTTP MCP servers.** A loader for streamable-HTTP servers (`--mcp-url`).
 - **`toolism diff`.** Show per-tool schema diffs of what slimming changed.
 - **More benchmark servers.** Add an entry to `bench/servers.toml`, then run
-  `uv run python bench/collect.py <name>` and `bench/run.py`.
+  `uv run python bench/collect.py <name>` and `bench/run.py`. See the
+  [benchmark workflow](bench/README.md) for details.
 
 ## Commits and pull requests
 
