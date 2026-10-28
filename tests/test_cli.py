@@ -568,9 +568,7 @@ def test_diff_omits_unchanged_tools(runner: CliRunner, document: Any) -> None:
 
 
 def test_diff_exit_code_exits_one_on_changes_and_still_prints_diff(runner: CliRunner) -> None:
-    document = [
-        {"name": "search", "inputSchema": {"title": "searchArguments", "type": "object"}}
-    ]
+    document = [{"name": "search", "inputSchema": {"title": "searchArguments", "type": "object"}}]
     # Without --exit-code, exit code is 0
     res_default = invoke(runner, "diff", "-", input=json.dumps(document))
     assert res_default.exit_code == 0
