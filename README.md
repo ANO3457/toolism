@@ -4,6 +4,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/toolism)](https://pypi.org/project/toolism/)
 [![CI](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml?query=branch%3Amaster)
 [![License](https://img.shields.io/github/license/rakeshnitb23/toolism)](LICENSE)
+[![Leaderboard](https://img.shields.io/badge/%F0%9F%8F%86-contributor%20leaderboard-orange)](#top-contributors)
 
 **Your agent pays for its tool definitions on every single request. toolism measures that cost
 and cuts it, without changing which tool calls are valid.**
@@ -32,8 +33,6 @@ pip install "toolism[mcp]"          # + read tools straight from an MCP server
 pip install "toolism[all]"          # everything, incl. Anthropic's exact token counter
 ```
 
-> Not on PyPI yet? Use `pip install "toolism[all] @ git+https://github.com/rakeshnitb23/toolism"`.
-
 ## 30-second tour
 
 **Measure** what your tools cost (OpenAI, Anthropic and MCP JSON are detected automatically):
@@ -56,7 +55,7 @@ goes to stderr:
 
 ```console
 $ toolism slim examples/mcp_tools.json -o tools.slim.json
-Slimmed 3 tools: 708 → 463 tokens (−245, −34.6%) — tiktoken:o200k_base (approximate), level safe
+Slimmed 3 tools: 708 → 457 tokens (−251, −34.6%) — tiktoken:o200k_base (approximate), level safe
 Savings by rule
 ┏━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓
 ┃ Rule  ┃ Name                   ┃ Tokens ┃ Tools ┃
@@ -76,16 +75,31 @@ Point it at a live MCP server instead of a file with `--mcp`:
 $ toolism measure --mcp "npx -y @modelcontextprotocol/server-github"
 ```
 
+`--mcp` runs that command exactly as your shell would, with your environment, so only point it
+at servers you would run anyway. See [SECURITY.md](SECURITY.md).
+
+**Preview** what slimming changes, as a unified diff per changed tool:
+
+```bash
+toolism diff examples/mcp_tools.json
+toolism diff examples/mcp_tools.json --level annotations -o tools.diff
+```
+
+The preview shows normalized JSON for each tool's name, description and input schema.
+Unchanged tools are omitted; a tool-order change alone produces no diff. `--level`,
+`--enable`, `--disable` and `--option` select the same rewrites as `slim`. The preview runs
+locally without a reporting-tokenizer call. Use `-` for stdin and `--output` to write a file.
+
 **Gate** it in CI against a committed baseline:
 
 ```console
 $ toolism check tools.json -b .toolism/baseline.json --update-baseline   # once, then commit it
-Wrote .toolism/baseline.json: 463 tokens across 3 tools (tiktoken:o200k_base).
+Wrote .toolism/baseline.json: 457 tokens across 3 tools (tiktoken:o200k_base).
 
 $ toolism check tools.json -b .toolism/baseline.json --max-increase 5%   # in CI
 toolism check FAILED
-Total: 708 tokens across 3 tools (baseline 463, +245, +52.9%) — tiktoken:o200k_base (approximate)
-  ✗ total grew by 245 tokens (+52.9%), over the allowed 5%
+Total: 708 tokens across 3 tools (baseline 457, +251, +54.9%) — tiktoken:o200k_base (approximate)
+  ✗ total grew by 251 tokens (+54.9%), over the allowed 5%
 Changed tools
 ┏━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━┳━━━━━━━━┓
 ┃ Tool            ┃ Baseline ┃ Now ┃ Change ┃
@@ -149,8 +163,9 @@ Every rule is documented, with its exact conditions, in [docs/rules.md](docs/rul
   long descriptions). Validation is still unchanged; measure the effect on your own evals.
 - **`--verify`** (`toolism[verify]`) checks every changed schema in both directions. It proves
   equivalence when only annotations changed, and otherwise searches for a counterexample with
-  [hypothesis-jsonschema](https://github.com/python-jsonschema/hypothesis-jsonschema). Any tool
-  with a counterexample is rolled back to its original. In CI, every schema the default rules
+  [hypothesis-jsonschema](https://github.com/python-jsonschema/hypothesis-jsonschema). When a
+  tool has a counterexample, toolism finds the rules responsible and reverts only their changes;
+  if it can't single them out, the whole tool is restored to its original. In CI, every schema the default rules
   change in the [benchmark corpus](bench/) is checked this way.
 
 OpenAI `strict: true` tools are respected: anything strict mode requires (`required` listing every
@@ -177,7 +192,23 @@ client.messages.create(model=..., tools=tools, messages=...)
 ```
 
 `slim_tools` is cached by input and returns fresh objects each call. See
-[examples/agent_startup.py](examples/agent_startup.py).
+[examples/agent_startup.py](examples/agent_startup.py) (Anthropic SDK) and
+[examples/openai_startup.py](examples/openai_startup.py) (OpenAI SDK).
+
+### Stability
+
+The public API is every name in `toolism.__all__` (functions such as `load`, `measure`, `slim`
+and `slim_tools`, plus the models and errors), the CLI commands and their options, the exit codes,
+and the GitHub Action's inputs and outputs. Anything under a leading underscore or not exported
+from `toolism` is internal and can change at any time.
+
+Before 1.0, a minor release (0.x → 0.y) may change the public API, but only after the old
+behaviour has been deprecated with a warning for at least one minor release, and every such change
+is listed in the [CHANGELOG](CHANGELOG.md). Patch releases never change it. Rule ids are never
+reused, and a rule's safety level never becomes less safe.
+
+To print the before/after token saving for a file of tools (offline, heuristic
+tokenizer), see [examples/measure_savings.py](examples/measure_savings.py).
 
 ## GitHub Action
 
@@ -207,6 +238,24 @@ The result is added to the job summary. Outputs: `status` (`pass`/`fail`/`error`
           path: ${{ steps.toolism.outputs.summary-file }}
 ```
 
+### pre-commit
+
+The same gate runs locally before each commit with [pre-commit](https://pre-commit.com):
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/rakeshnitb23/toolism
+    rev: vX.Y.Z  # the first release after 0.1.0 includes the hook
+    hooks:
+      - id: toolism-check
+        args: [tools.json, --baseline, .toolism/baseline.json, --max-increase, "5%"]
+        files: ^tools\.json$
+```
+
+The hook runs whenever a matching file is staged. Create the baseline once with
+`toolism check tools.json -b .toolism/baseline.json --update-baseline` and commit it.
+
 ## Token counts
 
 | Tokenizer | Use it for |
@@ -215,9 +264,31 @@ The result is added to the job summary. Outputs: `status` (`pass`/`fail`/`error`
 | `heuristic` | offline, no dependencies; within ~3% of o200k on the benchmark |
 | `anthropic:<model>` | exact counts from Anthropic's `count_tokens` API (needs `ANTHROPIC_API_KEY`) |
 
+For machine-readable reports, see [JSON output](docs/json-output.md): `measure -f json`,
+`slim -r json`, and `check -f json` share the versioned `toolism_report: 1` format.
+
+The default tokenizer downloads its vocabulary file (a few MB) once on first use. Offline, behind
+a proxy that blocks it, or in locked-down CI, use `-t heuristic`, or download it once and point
+`TIKTOKEN_CACHE_DIR` at the cache (in GitHub Actions, cache that directory with `actions/cache`).
+
 Counts are taken on a provider-neutral rendering of each tool. Providers wrap tools in their own
 prompt format, which adds overhead per tool that no schema change can remove. Reports always name
 the tokenizer and say whether the count is approximate. Set a default with `TOOLISM_TOKENIZER`.
+
+## Environment variables
+
+| Variable | Read in | What it does | When unset |
+| --- | --- | --- | --- |
+| `TOOLISM_TOKENIZER` | `tokenizers/__init__.py` | Default tokenizer when `-t`/`--tokenizer` isn't given (same forms as `-t`) | `tiktoken:o200k_base` |
+| `TOOLISM_DEBUG` | `cli.py`, `loaders/mcp.py` | Any non-empty value shows the full traceback instead of a one-line `error:`, and passes an `--mcp` server's stderr through to yours | One-line errors; the server's stderr is captured and hidden |
+| `NO_COLOR` | `cli.py` | If set (to any value), terminal output is not coloured | Coloured when writing to a terminal |
+| `TIKTOKEN_CACHE_DIR` | tiktoken | Where the `tiktoken:*` vocabulary is cached, so it can be reused offline | tiktoken's default cache in the system temp directory |
+| `ANTHROPIC_API_KEY` | `tokenizers/anthropic_tokenizer.py` | Needed for `-t anthropic:<model>` | `anthropic:` tokenizers fail with exit code 3 |
+| `GITHUB_STEP_SUMMARY` | `cli.py` | `toolism check` appends its Markdown summary to this file (set by GitHub Actions) | No step summary is written |
+
+A server started with `--mcp` inherits toolism's environment. The GitHub Action also reads its
+inputs as `INPUT_*` variables and uses `GITHUB_OUTPUT` and `RUNNER_TEMP`; these are set by the
+runner and don't need to be set by hand.
 
 ## How it differs
 
@@ -231,6 +302,12 @@ the tokenizer and say whether the count is approximate. Set a default with `TOOL
   toolism cuts the cost of each tool you do send.
 
 ## FAQ
+
+**How much money does this save?** Tokens saved per request × requests ÷ 1,000,000 × your
+model's input price per million tokens. For the three tools in the tour above (251 tokens saved
+per request), an agent making 1M requests a month on a model priced at, say, $3 per million input
+tokens saves 251 × $3 = $753 a month. Use `-t anthropic:<model>` for exact Claude counts, and
+check your provider's current prices.
 
 **Doesn't prompt caching make this pointless?** No, it makes it cheaper. Cached tokens still fill
 the context window, any change to the tool list misses the cache, and on Anthropic cache writes
@@ -246,6 +323,16 @@ outputs slightly, so if tool-call accuracy matters, compare on your evals. That 
 **Is tiktoken accurate for Claude or Gemini?** Not exactly, which is why reports say
 "approximate". Use `-t anthropic:<model>` for exact Claude counts. Relative savings are stable
 across tokenizers: within about 2 percentage points in the [benchmark](bench/RESULTS.md).
+
+## Top contributors
+
+<a href="https://github.com/rakeshnitb23/toolism/issues?q=is%3Aissue+is%3Aopen+%22Contributor+leaderboard%22+in%3Atitle">
+  <img src="https://raw.githubusercontent.com/rakeshnitb23/toolism/leaderboard/leaderboard.svg" alt="Top toolism contributors this month">
+</a>
+
+Updated on every merged PR. Merged PRs, written reviews and confirmed bug reports earn points:
+see [Points and levels](CONTRIBUTING.md#points-and-levels) and the
+[full leaderboard](https://github.com/rakeshnitb23/toolism/issues?q=is%3Aissue+is%3Aopen+%22Contributor+leaderboard%22+in%3Atitle).
 
 ## Contributing
 

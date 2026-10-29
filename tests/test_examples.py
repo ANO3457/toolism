@@ -24,9 +24,10 @@ def test_example_files_slim_with_savings(path: Path) -> None:
     assert not result.report.rollbacks
 
 
-def test_agent_startup_example_runs_offline() -> None:
+@pytest.mark.parametrize("script", ["agent_startup.py", "openai_startup.py"])
+def test_startup_examples_run_offline(script: str) -> None:
     out = subprocess.run(
-        [sys.executable, str(ROOT / "examples" / "agent_startup.py")],
+        [sys.executable, str(ROOT / "examples" / script)],
         check=True,
         capture_output=True,
         text=True,
@@ -46,6 +47,8 @@ def test_readme_quickstart_numbers_are_real() -> None:
     assert f"{report.total} tokens across 3 tools (average {report.total // 3})" in readme
     assert f"Slimmed 3 tools: {slim.before} → {slim.after} tokens" in readme
     assert f"baseline {slim.after}, +{slim.saved}," in readme
+    assert f"({slim.saved} tokens saved\nper request)" in readme
+    assert f"saves {slim.saved} × $3 = ${slim.saved * 3:,} a month" in readme
     for tool in report.tools:
         assert re.search(rf"│ {tool.name}\s+│\s+{tool.tokens} │", readme), tool.name
 
@@ -59,3 +62,25 @@ def test_readme_benchmark_numbers_match_results() -> None:
     median = results["median_saved_pct"]["safe"]
     assert f"**{total:.1f}% in total, with a median of {median:.1f}% per tool set**" in readme
     assert f"On {len(results['snapshots'])} tool sets ({results['total_tools']} tools" in readme
+
+
+def test_measure_savings_example_runs_offline() -> None:
+    out = subprocess.run(
+        [sys.executable, str(ROOT / "examples" / "measure_savings.py")],
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    ).stdout
+    match = re.search(
+        r"tokens before: (\d+)\ntokens after:\s+(\d+)\nsaved:\s+(\d+) \((\d+\.\d+)%\)",
+        out,
+    )
+    assert match is not None, out
+    before = int(match.group(1))
+    after = int(match.group(2))
+    saved = int(match.group(3))
+    pct = float(match.group(4))
+    assert after < before
+    assert saved == before - after
+    assert 0 < pct < 100

@@ -50,9 +50,15 @@ def toolset(*items: dict[str, Any]) -> ToolSet:
 
 def test_select_rules_by_level_enable_disable() -> None:
     safe = [r.id for r in select_rules("safe")]
-    assert safe == ["SL001", "SL002", "SL003", "SL004", "SL005", "SL006", "SL008", "SL009"]
+    assert safe == ["SL001", "SL002", "SL003", "SL004", "SL005", "SL006", "SL008", "SL009", "SL010"]
     annotations = [r.id for r in select_rules("annotations")]
-    assert annotations == [*safe, "SL101", "SL102"]  # the level is the gate for lossy rules
+    assert annotations == [
+        *safe,
+        "SL101",
+        "SL102",
+        "SL103",
+        "SL104",
+    ]  # the level is the gate for lossy rules
     assert "SL101" in [r.id for r in select_rules("safe", enable=["max-description-length"])]
     assert "SL001" not in [r.id for r in select_rules("safe", disable=["SL001"])]
     assert "SL007" in [r.id for r in select_rules(Safety.SAFE, enable=["SL007"])]
@@ -311,21 +317,59 @@ class DropsRequired(SchemaRule):
 
 @pytest.mark.skipif(not verify_available(), reason="verify extra not installed")
 def test_verification_rolls_back_unsafe_changes() -> None:
-    from toolism.rules import get_rule
 
     ts = toolset(PYDANTIC_TOOL)
-    result = slim(ts, rules=[get_rule("SL001"), DropsRequired], tokenizer=H, verify=True)
+    result = slim(ts, rules=[DropsRequired], tokenizer=H, verify=True)
     report = result.report
     assert result.toolset.tools[0] is ts.tools[0]  # restored
     assert len(report.rollbacks) == 1
     rollback = report.rollbacks[0]
     assert rollback.tool == "search_events"
-    assert rollback.rules == ("SL001", "SL906")
+    assert rollback.rules == ("SL906",)
+    assert rollback.reverted == ("SL906",)
     assert "query" not in rollback.example
     assert report.saved == 0
     assert all(r.tokens_saved == 0 for r in report.rules)
     assert report.verification[0].verdict is Verdict.COUNTEREXAMPLE
     assert any("rolled back" in w for w in report.warnings)
+
+
+@pytest.mark.skipif(not verify_available(), reason="verify extra not installed")
+def test_verification_reverts_only_the_unsafe_rule() -> None:
+    from toolism.rules import get_rule
+
+    ts = toolset(PYDANTIC_TOOL)
+    alone = slim(ts, rules=[get_rule("SL001")], tokenizer=H, verify=True)
+    result = slim(ts, rules=[get_rule("SL001"), DropsRequired], tokenizer=H, verify=True)
+    report = result.report
+    assert result.toolset.tools[0].input_schema == alone.toolset.tools[0].input_schema
+    assert result.toolset.tools[0].input_schema["required"] == ["query"]
+    [rollback] = report.rollbacks
+    assert rollback.rules == ("SL001", "SL906")
+    assert rollback.reverted == ("SL906",)
+    assert report.saved == alone.report.saved > 0
+    stats = {r.rule_id: r for r in report.rules}
+    assert stats["SL001"].tokens_saved == alone.report.rules[0].tokens_saved
+    assert stats["SL001"].tools_changed == ("search_events",)
+    assert stats["SL906"].tokens_saved == 0
+    assert stats["SL906"].tools_changed == ()
+    assert any("reverted rules SL906" in w for w in report.warnings)
+
+
+@pytest.mark.skipif(not verify_available(), reason="verify extra not installed")
+def test_rollback_falls_back_to_the_original_when_no_culprit_is_found(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from toolism import pipeline
+    from toolism.rules import get_rule
+
+    monkeypatch.setattr(pipeline, "_isolate", lambda *args, **kwargs: (None, ()))
+    ts = toolset(PYDANTIC_TOOL)
+    result = slim(ts, rules=[get_rule("SL001"), DropsRequired], tokenizer=H, verify=True)
+    assert result.toolset.tools[0] is ts.tools[0]
+    [rollback] = result.report.rollbacks
+    assert rollback.reverted == ("SL001", "SL906")
+    assert result.report.saved == 0
 
 
 @pytest.mark.skipif(not verify_available(), reason="verify extra not installed")
@@ -360,3 +404,28 @@ def test_thousand_tools_are_fast() -> None:
     assert report.tool_count == 1000
     assert report.saved > 0
     assert elapsed < 5, f"slimming 1000 tools took {elapsed:.1f}s"
+
+
+@pytest.mark.skipif(not verify_available(), reason="verify extra not installed")
+def test_verification_does_not_change_the_output_or_the_input() -> None:
+    import copy
+
+    shared = {"type": "object", "properties": {"n": {"type": "string", "title": "N"}}}
+    schema = {
+        "type": "object",
+        "properties": {
+            "a": {"type": "array", "items": {"$ref": "#/$defs/X"}, "title": "A"},
+            "c": {"type": "object", "additionalProperties": True},  # SL008: forces sampling
+            "b": {"$ref": "#/$defs/X"},
+        },
+        "$defs": {"X": shared},
+    }
+    ts = toolset({"name": "t", "description": "d", "inputSchema": schema})
+    pristine = copy.deepcopy(ts.tools[0].input_schema)
+    plain = slim(ts, tokenizer=H)
+    verified = slim(ts, tokenizer=H, verify=True)
+    assert verified.toolset.tools[0].input_schema == plain.toolset.tools[0].input_schema
+    assert "$ref" in str(verified.toolset.tools[0].input_schema)  # refs are not expanded
+    assert ts.tools[0].input_schema == pristine
+    assert verified.report.after == plain.report.after
+    assert verified.report.verification[0].method == "sampled"
