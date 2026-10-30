@@ -78,6 +78,7 @@ uv run mypy                                    # strict typing on src/
 uv run pytest -m "not slow"                    # fast suite (~1 min)
 uv run pytest -m slow                          # equivalence on the real-server corpus (~3 min)
 uv run pytest --cov                            # coverage must stay >= 90%
+uvx typos                                      # spelling (same check as CI)
 ```
 
 The tiktoken tests need the `o200k_base` vocabulary. It is downloaded on first use; offline, those
@@ -189,8 +190,9 @@ Each of these makes a good first issue:
 
 ## Releasing (maintainers)
 
-1. Set `__version__` in `src/toolism/__about__.py`, move the CHANGELOG's `Unreleased`
-   section under the new version, and update the compare links at the end of `CHANGELOG.md`.
+1. Set `__version__` in `src/toolism/__about__.py`; update `version` and `date-released` in
+   `CITATION.cff`. Move the CHANGELOG's `Unreleased` section under the new version, and update
+   the compare links at the end of `CHANGELOG.md`.
 2. Commit, tag `vX.Y.Z` and push the tag. The `Release` workflow checks that the tag matches
    `__version__`, builds, publishes to PyPI with trusted publishing, and creates the GitHub
    release from the CHANGELOG.
