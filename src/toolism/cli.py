@@ -395,11 +395,13 @@ def diff(
         options=options,
         tokenizer="heuristic",
     )
-    diff_text = render_tool_diff(toolset, result.toolset)
-    _emit(diff_text, output)
+    rendered = render_tool_diff(toolset, result.toolset)
+    _emit(rendered, output)
+    if not rendered:
+        typer.echo("No changes.", err=True)
     for warning in result.report.warnings:
         typer.echo(f"Warning: {warning}", err=True)
-    if exit_code and diff_text:
+    if exit_code and rendered:
         raise typer.Exit(EXIT_FAILED)
 
 
