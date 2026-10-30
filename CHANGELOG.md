@@ -21,6 +21,7 @@ All notable changes to this project are documented here. The format follows
 - README: offline use of the default tokenizer, a security note on `--mcp`, a cost estimate
   in the FAQ, and a Stability section defining the public API and the deprecation policy.
 - `SL103 drop-titles`: opt-in annotation-level rule that removes schema `title` keywords.
+- `SL104 dedupe-descriptions`: lossy annotation rule that drops property descriptions matching a whole sentence or line of the tool description.
 - pre-commit hook `toolism-check` (`.pre-commit-hooks.yaml`), the same budget gate as
   `toolism check`, run before each commit.
 - README: an Environment variables section listing every variable toolism reads.
