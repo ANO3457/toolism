@@ -564,7 +564,8 @@ def test_diff_changed_tool_and_unchanged_file(
 def test_diff_omits_unchanged_tools(runner: CliRunner, document: Any) -> None:
     result = invoke(runner, "diff", "-", input=json.dumps(document))
     assert result.exit_code == 0, result.output
-    assert result.stdout == result.stderr == ""
+    assert result.stdout == ""
+    assert result.stderr == "No changes.\n"
 
 
 @pytest.mark.parametrize(
@@ -590,12 +591,13 @@ def test_diff_uses_slim_level_and_rule_selection(
     ]
     result = invoke(runner, "diff", "-", *args, input=json.dumps(document))
     assert result.exit_code == 0, result.output
-    assert result.stderr == ""
     if changes:
+        assert result.stderr == ""
         assert '-        "examples": [\n' in result.stdout
         assert '-          "sample"\n' in result.stdout
     else:
         assert result.stdout == ""
+        assert result.stderr == "No changes.\n"
 
 
 def test_diff_applies_repeated_rule_options_to_tool_description(runner: CliRunner) -> None:
@@ -639,7 +641,8 @@ def test_diff_does_not_confuse_tool_reordering_with_schema_changes(runner: CliRu
     document = [{"name": name, "inputSchema": {"type": "object"}} for name in ("z", "a")]
     result = invoke(runner, "diff", "-", "--enable", "SL007", input=json.dumps(document))
     assert result.exit_code == 0, result.output
-    assert result.stdout == result.stderr == ""
+    assert result.stdout == ""
+    assert result.stderr == "No changes.\n"
 
 
 def test_diff_retains_duplicate_occurrences_when_tools_are_reordered(runner: CliRunner) -> None:
@@ -671,6 +674,7 @@ def test_diff_retains_duplicate_occurrences_when_tools_are_reordered(runner: Cli
     assert '--- "z"' not in result.stdout
     assert '--- "a"' not in result.stdout
     assert "Warning: duplicate tool name 'same' (2 times)" in result.stderr
+    assert "No changes." not in result.stderr
 
 
 def test_diff_writes_output_file(runner: CliRunner, bloated: Path, tmp_path: Path) -> None:
@@ -686,7 +690,8 @@ def test_diff_replaces_stale_output_with_empty_result(runner: CliRunner, tmp_pat
     target.write_text("old diff", encoding="utf-8")
     result = invoke(runner, "diff", "-", "-o", target, input="[]")
     assert result.exit_code == 0, result.output
-    assert result.stdout == result.stderr == ""
+    assert result.stdout == ""
+    assert result.stderr == "No changes.\n"
     assert target.read_bytes() == b""
 
 

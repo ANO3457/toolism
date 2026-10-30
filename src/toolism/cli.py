@@ -392,7 +392,10 @@ def diff(
         tokenizer="heuristic",
     )
     _, color = _style(sys.stdout) if output is None else (DEFAULT_WIDTH, False)
-    _emit(render_tool_diff(toolset, result.toolset, color=color), output, color=color)
+    rendered = render_tool_diff(toolset, result.toolset, color=color)
+    _emit(rendered, output, color=color)
+    if not rendered:
+        typer.echo("No changes.", err=True)
     for warning in result.report.warnings:
         typer.echo(f"Warning: {warning}", err=True)
 
