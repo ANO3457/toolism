@@ -78,6 +78,7 @@ uv run mypy                                    # strict typing on src/
 uv run pytest -m "not slow"                    # fast suite (~1 min)
 uv run pytest -m slow                          # equivalence on the real-server corpus (~3 min)
 uv run pytest --cov                            # coverage must stay >= 90%
+uvx typos                                      # spelling (same check as CI)
 ```
 
 The tiktoken tests need the `o200k_base` vocabulary. It is downloaded on first use; offline, those
