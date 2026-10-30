@@ -125,9 +125,9 @@ def _write_file(path: Path, text: str, *, append: bool = False) -> None:
         raise ToolismError(f"cannot write {path}: {exc.strerror or exc}") from None
 
 
-def _emit(text: str, output: Path | None) -> None:
+def _emit(text: str, output: Path | None, *, color: bool | None = None) -> None:
     if output is None:
-        typer.echo(text, nl=False)
+        typer.echo(text, nl=False, color=color)
     else:
         _write_file(output, text)
 
@@ -391,7 +391,11 @@ def diff(
         options=options,
         tokenizer="heuristic",
     )
-    _emit(render_tool_diff(toolset, result.toolset), output)
+    _, color = _style(sys.stdout) if output is None else (DEFAULT_WIDTH, False)
+    rendered = render_tool_diff(toolset, result.toolset, color=color)
+    _emit(rendered, output, color=color)
+    if not rendered:
+        typer.echo("No changes.", err=True)
     for warning in result.report.warnings:
         typer.echo(f"Warning: {warning}", err=True)
 
