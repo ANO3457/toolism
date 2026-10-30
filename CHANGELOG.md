@@ -11,6 +11,9 @@ All notable changes to this project are documented here. The format follows
 - `toolism diff --mcp COMMAND` previews a live stdio server's tools, with the same
   `--mcp-timeout SECONDS` and input validation as `measure`, `slim` and `check` (#95).
 
+- Opt-in persistent Anthropic token-count caching via `TOOLISM_CACHE_DIR`, including baseline,
+  probe, marginal and ordered aggregate counts. Bounded, checksummed snapshots use atomic
+  replacement and fixed 24-hour generations; README documents clearing and Actions cache use.
 - SL010 `single-allof` collapses single-branch `allOf` wrappers when their keywords can be
   merged without changing validation. Strict tools and uncertain dialect or reference scopes
   are left alone.
@@ -21,6 +24,7 @@ All notable changes to this project are documented here. The format follows
 - README: offline use of the default tokenizer, a security note on `--mcp`, a cost estimate
   in the FAQ, and a Stability section defining the public API and the deprecation policy.
 - `SL103 drop-titles`: opt-in annotation-level rule that removes schema `title` keywords.
+- `SL104 dedupe-descriptions`: lossy annotation rule that drops property descriptions matching a whole sentence or line of the tool description.
 - pre-commit hook `toolism-check` (`.pre-commit-hooks.yaml`), the same budget gate as
   `toolism check`, run before each commit.
 - README: an Environment variables section listing every variable toolism reads.
@@ -39,6 +43,7 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- `toolism diff` now reports `No changes.` on stderr when the rendered diff is empty.
 - `toolism measure` now preserves duplicate tool name warnings in table, Markdown and JSON output.
 - `--verify` no longer rewrites the schemas it checks. hypothesis-jsonschema resolves `$ref`s in
   place, so with `--verify` the slimmed output could come back with `$ref`s expanded (more tokens

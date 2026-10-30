@@ -30,6 +30,14 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
 
+  spelling:
+    name: spelling
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Spell check with typos
+        uses: crate-ci/typos@v1.51.1
+
   types:
     runs-on: ubuntu-latest
     steps:
