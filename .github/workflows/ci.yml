@@ -30,6 +30,14 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
 
+  spelling:
+    name: spelling
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Spell check with typos
+        uses: crate-ci/typos@v1.51.1
+
   types:
     runs-on: ubuntu-latest
     steps:
@@ -74,6 +82,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: node --test .github/scripts/assignment-policy.test.js
+
+  leaderboard-script:
+    name: leaderboard script
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+      - run: uvx pytest .github/scripts -p no:cacheprovider
 
   bench-equivalence:
     name: bench equivalence (real servers)

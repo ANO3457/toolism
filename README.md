@@ -4,6 +4,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/toolism)](https://pypi.org/project/toolism/)
 [![CI](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml?query=branch%3Amaster)
 [![License](https://img.shields.io/github/license/rakeshnitb23/toolism)](LICENSE)
+[![Leaderboard](https://img.shields.io/badge/%F0%9F%8F%86-contributor%20leaderboard-orange)](#top-contributors)
 
 **Your agent pays for its tool definitions on every single request. toolism measures that cost
 and cuts it, without changing which tool calls are valid.**
@@ -261,7 +262,67 @@ The hook runs whenever a matching file is staged. Create the baseline once with
 | --- | --- |
 | `tiktoken:o200k_base` (default) | OpenAI models; a good approximation elsewhere |
 | `heuristic` | offline, no dependencies; within ~3% of o200k on the benchmark |
-| `anthropic:<model>` | exact counts from Anthropic's `count_tokens` API (needs `ANTHROPIC_API_KEY`) |
+| `anthropic:<model>` | provider-reported counts from Anthropic's `count_tokens` API (needs `ANTHROPIC_API_KEY`) |
+
+### Persistent API count cache
+
+Set a nonempty `TOOLISM_CACHE_DIR` to reuse Anthropic counts between runs:
+
+```bash
+TOOLISM_CACHE_DIR=.cache/toolism toolism measure tools.json -t anthropic:claude-sonnet-5
+```
+
+Unset or empty means persistence is disabled. The normal Anthropic package/key checks still run.
+Explicitly injected clients and `ANTHROPIC_CUSTOM_HEADERS` configurations keep their existing
+memory-only behavior. Clients with an unidentified/ambiguous endpoint or API-version identity
+also remain uncached. This does not add Gemini support.
+
+A complete, unexpired cache of an unchanged workload makes zero count API requests, including
+the empty-request baseline, probe and aggregate tool-set requests. Totals are never reconstructed
+by summing marginal counts. Changing a tool, wire key order, model, SDK, toolism version or
+counting recipe causes the corresponding misses. Missing, invalid, expired or evicted entries
+are counted normally; provider errors retain their existing behavior.
+
+The directory contains one `toolism-token-counts-v1.json` snapshot with hashed identities,
+integer counts, generation metadata and an integrity checksum, not tool/schema/credential plaintext.
+The checksum detects accidental corruption, including changes that remain valid JSON. It is capped at
+4,096 entries and 1 MiB, with oldest-write eviction and a fixed 24-hour generation lifetime.
+Hits and rewrites do not renew that lifetime. Counts can be stale within it; this lifetime is a
+cache policy, not a provider stability guarantee. To clear it, stop active runs, remove that
+one file and create a fresh tokenizer/process. Existing instances or writers can retain or
+repopulate cached entries.
+
+Writes use a temporary sibling and atomic replacement. Concurrent writers can lose each other's
+new cache hits and repeat requests; they do not merge updates or coordinate cold requests.
+The size bound covers the published snapshot, not simultaneous temporary files or abandoned
+crash leftovers. Cache filesystem failures are misses, and replacement is not a guarantee of
+power-loss durability. Use a trusted cache directory: digests identify requests, but do not
+authenticate stored numeric values: someone controlling the cache can recalculate its checksum.
+
+For GitHub Actions, use a new save key for refreshed snapshots because cache archives are
+immutable. For example, in a workflow that already installs its locked toolism dependencies:
+
+```yaml
+env:
+  TOOLISM_CACHE_DIR: .cache/toolism-counts
+  TOOLISM_CACHE_COMPAT: v1-anthropic-claude-sonnet-5-toolism-0.1.0
+steps:
+  - uses: actions/checkout@v7
+  - uses: actions/cache@v6
+    with:
+      path: ${{ env.TOOLISM_CACHE_DIR }}
+      key: counts-${{ runner.os }}-${{ env.TOOLISM_CACHE_COMPAT }}-${{ hashFiles('uv.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
+      restore-keys: |
+        counts-${{ runner.os }}-${{ env.TOOLISM_CACHE_COMPAT }}-${{ hashFiles('uv.lock') }}-
+```
+
+Internal identities still validate restored records. Cross-PR reuse needs a trusted
+base/default-branch cache producer; merge-ref caches are restricted to that PR's reruns.
+Fork PRs may read base caches, so never put secrets in cache paths/keys/files or expose provider
+credentials to untrusted jobs. This cache is distinct from provider prompt caching.
+
+For machine-readable reports, see [JSON output](docs/json-output.md): `measure -f json`,
+`slim -r json`, and `check -f json` share the versioned `toolism_report: 1` format.
 
 The default tokenizer downloads its vocabulary file (a few MB) once on first use. Offline, behind
 a proxy that blocks it, or in locked-down CI, use `-t heuristic`, or download it once and point
@@ -270,6 +331,22 @@ a proxy that blocks it, or in locked-down CI, use `-t heuristic`, or download it
 Counts are taken on a provider-neutral rendering of each tool. Providers wrap tools in their own
 prompt format, which adds overhead per tool that no schema change can remove. Reports always name
 the tokenizer and say whether the count is approximate. Set a default with `TOOLISM_TOKENIZER`.
+
+## Environment variables
+
+| Variable | Read in | What it does | When unset |
+| --- | --- | --- | --- |
+| `TOOLISM_TOKENIZER` | `tokenizers/__init__.py` | Default tokenizer when `-t`/`--tokenizer` isn't given (same forms as `-t`) | `tiktoken:o200k_base` |
+| `TOOLISM_CACHE_DIR` | `tokenizers/anthropic_tokenizer.py` | Opt-in directory for bounded persistent Anthropic count snapshots | Persistence disabled (also when empty) |
+| `TOOLISM_DEBUG` | `cli.py`, `loaders/mcp.py` | Any non-empty value shows the full traceback instead of a one-line `error:`, and passes an `--mcp` server's stderr through to yours | One-line errors; the server's stderr is captured and hidden |
+| `NO_COLOR` | `cli.py` | If set (to any value), terminal output is not coloured | Coloured when writing to a terminal |
+| `TIKTOKEN_CACHE_DIR` | tiktoken | Where the `tiktoken:*` vocabulary is cached, so it can be reused offline | tiktoken's default cache in the system temp directory |
+| `ANTHROPIC_API_KEY` | `tokenizers/anthropic_tokenizer.py` | Needed for `-t anthropic:<model>` | `anthropic:` tokenizers fail with exit code 3 |
+| `GITHUB_STEP_SUMMARY` | `cli.py` | `toolism check` appends its Markdown summary to this file (set by GitHub Actions) | No step summary is written |
+
+A server started with `--mcp` inherits toolism's environment. The GitHub Action also reads its
+inputs as `INPUT_*` variables and uses `GITHUB_OUTPUT` and `RUNNER_TEMP`; these are set by the
+runner and don't need to be set by hand.
 
 ## How it differs
 
@@ -304,6 +381,16 @@ outputs slightly, so if tool-call accuracy matters, compare on your evals. That 
 **Is tiktoken accurate for Claude or Gemini?** Not exactly, which is why reports say
 "approximate". Use `-t anthropic:<model>` for exact Claude counts. Relative savings are stable
 across tokenizers: within about 2 percentage points in the [benchmark](bench/RESULTS.md).
+
+## Top contributors
+
+<a href="https://github.com/rakeshnitb23/toolism/issues?q=is%3Aissue+is%3Aopen+%22Contributor+leaderboard%22+in%3Atitle">
+  <img src="https://raw.githubusercontent.com/rakeshnitb23/toolism/leaderboard/leaderboard.svg" alt="Top toolism contributors this month">
+</a>
+
+Updated on every merged PR. Merged PRs, written reviews and confirmed bug reports earn points:
+see [Points and levels](CONTRIBUTING.md#points-and-levels) and the
+[full leaderboard](https://github.com/rakeshnitb23/toolism/issues?q=is%3Aissue+is%3Aopen+%22Contributor+leaderboard%22+in%3Atitle).
 
 ## Contributing
 
