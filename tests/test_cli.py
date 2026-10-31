@@ -788,6 +788,55 @@ def test_diff_reports_output_write_errors(runner: CliRunner, bloated: Path, tmp_
     assert "cannot write" in result.stderr
 
 
+def test_diff_colours_terminal_and_keeps_piped_no_color_and_file_plain(
+    runner: CliRunner, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "tools.json"
+    source.write_text(
+        json.dumps(
+            {
+                "tools": [
+                    {
+                        "name": "search",
+                        "description": "Search.   ",
+                        "inputSchema": {"title": "searchArguments", "type": "object"},
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    plain = invoke(runner, "diff", source)
+    assert plain.exit_code == 0, plain.output
+    assert "\x1b[" not in plain.stdout
+
+    # Simulate a TTY on stdout
+    real_style = cli._style
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setattr(cli, "_style", lambda _stream: real_style(FakeTTY()))
+    coloured = invoke(runner, "diff", source)
+    assert coloured.exit_code == 0, coloured.output
+    assert "\x1b[36m@@ -1,8 +1,7 @@\x1b[0m\n" in coloured.stdout
+    assert '\x1b[31m-  "description": "Search.   ",\x1b[0m\n' in coloured.stdout
+    assert '\x1b[32m+  "description": "Search.",\x1b[0m\n' in coloured.stdout
+    assert '\x1b[31m-    "title": "searchArguments",\x1b[0m\n' in coloured.stdout
+    assert '--- "search" (before)\n' in coloured.stdout
+    assert '+++ "search" (after)\n' in coloured.stdout
+
+    # NO_COLOR disables terminal colouring and leaves output byte-for-byte plain
+    monkeypatch.setenv("NO_COLOR", "1")
+    no_color = invoke(runner, "diff", source)
+    assert no_color.exit_code == 0, no_color.output
+    assert no_color.stdout == plain.stdout
+
+    # Writing to -o never emits ANSI escapes even when stdout is a TTY without NO_COLOR
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    out_file = tmp_path / "out.diff"
+    to_file = invoke(runner, "diff", source, "-o", out_file)
+    assert to_file.exit_code == 0, to_file.output
+    assert out_file.read_text(encoding="utf-8") == plain.stdout
+
+
 def test_architecture_doc_lists_every_cli_option() -> None:
     """docs/architecture/ARCHITECTURE.md section 10 is the CLI reference: keep it complete."""
     import typer.main
