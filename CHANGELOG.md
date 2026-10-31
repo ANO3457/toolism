@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `toolism diff --mcp COMMAND` previews a live stdio server's tools, with the same
+  `--mcp-timeout SECONDS` and input validation as `measure`, `slim` and `check` (#95).
+
 - Opt-in persistent Anthropic token-count caching via `TOOLISM_CACHE_DIR`, including baseline,
   probe, marginal and ordered aggregate counts. Bounded, checksummed snapshots use atomic
   replacement and fixed 24-hour generations; README documents clearing and Actions cache use.
