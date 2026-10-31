@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Include the examples, benchmark corpus and documentation fixtures in the source
+  distribution so downstream packagers can run its test suite.
+
 ### Added
 
 - Opt-in persistent Anthropic token-count caching via `TOOLISM_CACHE_DIR`, including baseline,
