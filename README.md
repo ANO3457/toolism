@@ -252,9 +252,9 @@ jobs:
   tool-tokens:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: toolism
-        uses: rakeshnitb23/toolism@v0.1.0
+        uses: rakeshnitb23/toolism@v0.2.0
         with:
           source: tools.json                  # or: mcp: "npx -y @your/mcp-server"
           baseline: .toolism/baseline.json
@@ -279,7 +279,7 @@ The same gate runs locally before each commit with [pre-commit](https://pre-comm
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/rakeshnitb23/toolism
-    rev: vX.Y.Z  # the first release after 0.1.0 includes the hook
+    rev: v0.2.0
     hooks:
       - id: toolism-check
         args: [tools.json, --baseline, .toolism/baseline.json, --max-increase, "5%"]
@@ -338,7 +338,7 @@ immutable. For example, in a workflow that already installs its locked toolism d
 ```yaml
 env:
   TOOLISM_CACHE_DIR: .cache/toolism-counts
-  TOOLISM_CACHE_COMPAT: v1-anthropic-claude-sonnet-5-toolism-0.1.0
+  TOOLISM_CACHE_COMPAT: v1-anthropic-claude-sonnet-5-toolism-0.2.0
 steps:
   - uses: actions/checkout@v7
   - uses: actions/cache@v6
