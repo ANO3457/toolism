@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/toolism)](https://pypi.org/project/toolism/)
 [![Python versions](https://img.shields.io/pypi/pyversions/toolism)](https://pypi.org/project/toolism/)
 [![CI](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/rakeshnitb23/toolism/actions/workflows/ci.yml?query=branch%3Amaster)
-[![License](https://img.shields.io/github/license/rakeshnitb23/toolism)](LICENSE)
+[![License](https://img.shields.io/github/license/rakeshnitb23/toolism)](https://github.com/rakeshnitb23/toolism/blob/master/LICENSE)
 [![Leaderboard](https://img.shields.io/badge/%F0%9F%8F%86-contributor%20leaderboard-orange)](#top-contributors)
 
 **Your agent pays for its tool definitions on every single request. toolism measures that cost
@@ -21,7 +21,7 @@ GitHub, Playwright, Notion, Context7 and AWS docs, plus one generated Pydantic s
 **37.4% in total, with a median of 11.3% per tool set**: 22% on the official git server, 34% on
 a typical Pydantic-typed server, 73% on Notion (which copies the same nine `$defs` into all 24
 tools; 18 of them use none).
-Lean, hand-tuned schemas save almost nothing, and the [benchmark](bench/RESULTS.md) shows those
+Lean, hand-tuned schemas save almost nothing, and the [benchmark](https://github.com/rakeshnitb23/toolism/blob/master/bench/RESULTS.md) shows those
 too.
 
 ## Install
@@ -55,13 +55,13 @@ goes to stderr:
 
 ```console
 $ toolism slim examples/mcp_tools.json -o tools.slim.json
-Slimmed 3 tools: 708 → 457 tokens (−251, −34.6%) — tiktoken:o200k_base (approximate), level safe
+Slimmed 3 tools: 708 → 457 tokens (−251, −35.5%) — tiktoken:o200k_base (approximate), level safe
 Savings by rule
 ┏━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓
 ┃ Rule  ┃ Name                   ┃ Tokens ┃ Tools ┃
 ┡━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━┩
 │ SL001 │ redundant-title        │   −111 │     3 │
-│ SL002 │ nullable-anyof         │    −36 │     2 │
+│ SL002 │ nullable-anyof         │    −42 │     3 │
 │ SL003 │ null-default           │    −33 │     3 │
 │ SL004 │ inline-defs            │    −42 │     2 │
 │ SL005 │ description-whitespace │     −6 │     3 │
@@ -76,7 +76,7 @@ $ toolism measure --mcp "npx -y @modelcontextprotocol/server-github"
 ```
 
 `--mcp` runs that command exactly as your shell would, with your environment, so only point it
-at servers you would run anyway. See [SECURITY.md](SECURITY.md).
+at servers you would run anyway. See [SECURITY.md](https://github.com/rakeshnitb23/toolism/blob/master/SECURITY.md).
 
 **Preview** what slimming changes, as a unified diff per changed tool:
 
@@ -110,8 +110,8 @@ Changed tools
 ┃ Tool            ┃ Baseline ┃ Now ┃ Change ┃
 ┡━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━╇━━━━━━━━┩
 │ create_contact  │      212 │ 354 │   +142 │
+│ log_activity    │      123 │ 178 │    +55 │
 │ search_contacts │      122 │ 176 │    +54 │
-│ log_activity    │      129 │ 178 │    +49 │
 └─────────────────┴──────────┴─────┴────────┘
 ```
 
@@ -138,14 +138,14 @@ Before, as the MCP Python SDK generates it:
 After `toolism slim`, which accepts exactly the same arguments:
 
 ```json
-"occurred_on": {"anyOf": [{"format": "date", "type": "string"}, {"type": "null"}]},
+"occurred_on": {"type": ["string", "null"], "format": "date"},
 "priority": {"enum": ["low", "normal", "high"], "type": "string", "default": "normal"}
 ```
 
 | Rule | What it removes | Default |
 | --- | --- | --- |
 | SL001 `redundant-title` | titles that repeat the property, `$defs` key or tool name | ✓ |
-| SL002 `nullable-anyof` | `anyOf: [{type: X}, {type: null}]` → `type: [X, "null"]` | ✓ |
+| SL002 `nullable-anyof` | `anyOf: [{type: X}, {type: null}]` → `type: [X, "null"]`, keeping string keywords such as `format` | ✓ |
 | SL003 `null-default` | `default: null` on optional properties (kept for strict tools) | ✓ |
 | SL004 `inline-defs` | unused `$defs`; inlines definitions used exactly once | ✓ |
 | SL005 `description-whitespace` | docstring indentation, trailing spaces, blank-line runs | ✓ |
@@ -153,10 +153,13 @@ After `toolism slim`, which accepts exactly the same arguments:
 | SL007 `stable-order` | nothing; sorts tools so prompt-cache prefixes stay stable | `--enable` |
 | SL008 `noop-keywords` | `required: []`, `additionalProperties: true` and other defaults | ✓ |
 | SL009 `schema-uri` | the root `$schema` URI when the schema means the same in every draft | ✓ |
+| SL010 `single-allof` | single-branch `allOf` wrappers, when merging keeps validation identical | ✓ |
 | SL101 `max-description-length` | truncates long descriptions at a sentence boundary | `--level annotations` |
 | SL102 `drop-examples` | `examples` / `example` | `--level annotations` |
+| SL103 `drop-titles` | every schema `title` | `--level annotations` |
+| SL104 `dedupe-descriptions` | property descriptions that repeat a sentence or line of the tool description | `--level annotations` |
 
-Every rule is documented, with its exact conditions, in [docs/rules.md](docs/rules.md)
+Every rule is documented, with its exact conditions, in [docs/rules.md](https://github.com/rakeshnitb23/toolism/blob/master/docs/rules.md)
 (`toolism rules` lists them too).
 
 ### Safety levels and verification
@@ -165,13 +168,13 @@ Every rule is documented, with its exact conditions, in [docs/rules.md](docs/rul
   accepts exactly the same tool calls as the original. It removes only information the model
   already has.
 - **`--level annotations`**: also drops annotation text that might help the model (examples,
-  long descriptions). Validation is still unchanged; measure the effect on your own evals.
+  titles, long or repeated descriptions). Validation is still unchanged; measure the effect on your own evals.
 - **`--verify`** (`toolism[verify]`) checks every changed schema in both directions. It proves
   equivalence when only annotations changed, and otherwise searches for a counterexample with
   [hypothesis-jsonschema](https://github.com/python-jsonschema/hypothesis-jsonschema). When a
   tool has a counterexample, toolism finds the rules responsible and reverts only their changes;
   if it can't single them out, the whole tool is restored to its original. In CI, every schema the default rules
-  change in the [benchmark corpus](bench/) is checked this way.
+  change in the [benchmark corpus](https://github.com/rakeshnitb23/toolism/tree/master/bench/) is checked this way.
 
 OpenAI `strict: true` tools are respected: anything strict mode requires (`required` listing every
 property, `additionalProperties: false`) is left alone.
@@ -197,8 +200,8 @@ client.messages.create(model=..., tools=tools, messages=...)
 ```
 
 `slim_tools` is cached by input and returns fresh objects each call. See
-[examples/agent_startup.py](examples/agent_startup.py) (Anthropic SDK) and
-[examples/openai_startup.py](examples/openai_startup.py) (OpenAI SDK).
+[examples/agent_startup.py](https://github.com/rakeshnitb23/toolism/blob/master/examples/agent_startup.py) (Anthropic SDK) and
+[examples/openai_startup.py](https://github.com/rakeshnitb23/toolism/blob/master/examples/openai_startup.py) (OpenAI SDK).
 
 ### Stability
 
@@ -209,11 +212,11 @@ from `toolism` is internal and can change at any time.
 
 Before 1.0, a minor release (0.x → 0.y) may change the public API, but only after the old
 behaviour has been deprecated with a warning for at least one minor release, and every such change
-is listed in the [CHANGELOG](CHANGELOG.md). Patch releases never change it. Rule ids are never
+is listed in the [CHANGELOG](https://github.com/rakeshnitb23/toolism/blob/master/CHANGELOG.md). Patch releases never change it. Rule ids are never
 reused, and a rule's safety level never becomes less safe.
 
 To print the before/after token saving for a file of tools (offline, heuristic
-tokenizer), see [examples/measure_savings.py](examples/measure_savings.py).
+tokenizer), see [examples/measure_savings.py](https://github.com/rakeshnitb23/toolism/blob/master/examples/measure_savings.py).
 
 ## GitHub Action
 
@@ -326,7 +329,7 @@ base/default-branch cache producer; merge-ref caches are restricted to that PR's
 Fork PRs may read base caches, so never put secrets in cache paths/keys/files or expose provider
 credentials to untrusted jobs. This cache is distinct from provider prompt caching.
 
-For machine-readable reports, see [JSON output](docs/json-output.md): `measure -f json`,
+For machine-readable reports, see [JSON output](https://github.com/rakeshnitb23/toolism/blob/master/docs/json-output.md): `measure -f json`,
 `slim -r json`, and `check -f json` share the versioned `toolism_report: 1` format.
 
 The default tokenizer downloads its vocabulary file (a few MB) once on first use. Offline, behind
@@ -385,7 +388,7 @@ outputs slightly, so if tool-call accuracy matters, compare on your evals. That 
 
 **Is tiktoken accurate for Claude or Gemini?** Not exactly, which is why reports say
 "approximate". Use `-t anthropic:<model>` for exact Claude counts. Relative savings are stable
-across tokenizers: within about 2 percentage points in the [benchmark](bench/RESULTS.md).
+across tokenizers: within about 2 percentage points in the [benchmark](https://github.com/rakeshnitb23/toolism/blob/master/bench/RESULTS.md).
 
 ## Top contributors
 
@@ -394,15 +397,15 @@ across tokenizers: within about 2 percentage points in the [benchmark](bench/RES
 </a>
 
 Updated on every merged PR. Merged PRs, written reviews and confirmed bug reports earn points:
-see [Points and levels](CONTRIBUTING.md#points-and-levels) and the
+see [Points and levels](https://github.com/rakeshnitb23/toolism/blob/master/CONTRIBUTING.md#points-and-levels) and the
 [full leaderboard](https://github.com/rakeshnitb23/toolism/issues?q=is%3Aissue+is%3Aopen+%22Contributor+leaderboard%22+in%3Atitle).
 
 ## Contributing
 
 New rules, tokenizers and formats are welcome. A rule is one small module plus a fixture file;
-see [CONTRIBUTING.md](CONTRIBUTING.md) for the 3-step guide and a list of ideas. Everyone taking
-part is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+see [CONTRIBUTING.md](https://github.com/rakeshnitb23/toolism/blob/master/CONTRIBUTING.md) for the 3-step guide and a list of ideas. Everyone taking
+part is expected to follow the [Code of Conduct](https://github.com/rakeshnitb23/toolism/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/rakeshnitb23/toolism/blob/master/LICENSE)
