@@ -191,7 +191,7 @@ toolism check   SOURCE --baseline FILE [--max-increase 10%|500] [--max-total N] 
 toolism rules   [--format table|json|markdown] [--output FILE]
 
 toolism diff    [SOURCE] [--level safe|annotations] [--enable ID]... [--disable ID]...
-                        [--option ID.key=value]... [--output FILE]
+                        [--option ID.key=value]... [--output FILE] [--exit-code]
                         [--mcp COMMAND] [--mcp-timeout SECONDS]
 ```
 
@@ -201,7 +201,7 @@ toolism diff    [SOURCE] [--level safe|annotations] [--enable ID]... [--disable 
 - `SOURCE` is a JSON file, `-` for stdin, or `--mcp "<command>"` for a live stdio server.
 - **Exit codes:**
   - `0` = OK
-  - `1` = budget exceeded (check), or a verification rollback happened (slim `--fail-on-rollback`)
+  - `1` = budget exceeded (check), a verification rollback happened (slim `--fail-on-rollback`), or differences found (diff `--exit-code`)
   - `2` = usage or input error
   - `3` = tokenizer unavailable
 

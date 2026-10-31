@@ -14,12 +14,15 @@ All notable changes to this project are documented here. The format follows
 - Opt-in persistent Anthropic token-count caching via `TOOLISM_CACHE_DIR`, including baseline,
   probe, marginal and ordered aggregate counts. Bounded, checksummed snapshots use atomic
   replacement and fixed 24-hour generations; README documents clearing and Actions cache use.
+- `toolism diff` gains an `--exit-code` flag that exits 1 when any tool would change,
+  making it easy to gate on unslimmed schemas in CI.
 - SL010 `single-allof` collapses single-branch `allOf` wrappers when their keywords can be
   merged without changing validation. Strict tools and uncertain dialect or reference scopes
   are left alone.
 
 - `toolism diff`: per-tool unified previews of changed descriptions and input schemas,
-  with the same level/rule selection as `slim`, stdin and output-file support.
+  with the same level/rule selection as `slim`, stdin and output-file support, and
+  terminal colour (`-` red, `+` green, `@@` cyan) that respects `NO_COLOR`.
 - `examples/openai_startup.py`: `slim_tools` with the OpenAI SDK.
 - README: offline use of the default tokenizer, a security note on `--mcp`, a cost estimate
   in the FAQ, and a Stability section defining the public API and the deprecation policy.
