@@ -13,6 +13,7 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- GitHub Action: add the optional `mcp-timeout` input to configure the stdio MCP server startup timeout; leaving it empty preserves the 60-second default.
 - `toolism diff --mcp COMMAND` previews a live stdio server's tools, with the same
   `--mcp-timeout SECONDS` and input validation as `measure`, `slim` and `check` (#95).
 
