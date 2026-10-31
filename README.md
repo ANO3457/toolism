@@ -217,6 +217,31 @@ tokenizer), see [examples/measure_savings.py](examples/measure_savings.py).
 
 ## GitHub Action
 
+### Inputs
+
+| Input | Description | Default |
+| --- | --- | --- |
+| `source` | Path to a tool definitions JSON file. Use this or `mcp`. | Empty |
+| `mcp` | Command that starts a stdio MCP server. Use this or `source`. | Empty |
+| `mcp-timeout` | Maximum seconds to wait for the MCP server to start. | 60 seconds |
+| `baseline` | Committed baseline file to compare against. | `.toolism/baseline.json` |
+| `max-increase` | Allowed growth over the baseline, as tokens and/or a percentage. | No growth |
+| `max-total` | Fail if total tokens exceed this value. | No limit |
+| `max-tool` | Fail if any single tool exceeds this value. | No limit |
+| `tokenizer` | `heuristic`, `tiktoken:<encoding>` or `anthropic:<model>`. | `tiktoken:o200k_base` |
+| `update-baseline` | Write the baseline instead of checking. | `false` |
+| `allow-tokenizer-change` | Permit a baseline tokenizer mismatch. | `false` |
+| `python-version` | Python used to run toolism. | `3.12` |
+
+### Outputs
+
+| Output | Description |
+| --- | --- |
+| `status` | `pass`, `fail` or `error`. |
+| `total` | Total tool definition tokens now. |
+| `delta` | Change against the baseline in tokens (empty without a baseline). |
+| `summary-file` | Markdown summary file for a sticky pull request comment. |
+
 ```yaml
 # .github/workflows/tool-tokens.yml
 on: pull_request
