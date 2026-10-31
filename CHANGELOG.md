@@ -40,6 +40,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Tool files saved with a UTF-8 BOM (PowerShell, some Windows editors) now load from a path,
+  from stdin, and through `toolism.loads`; the BOM is stripped before parsing.
 - `toolism diff` now reports `No changes.` on stderr when the rendered diff is empty.
 - `toolism measure` now preserves duplicate tool name warnings in table, Markdown and JSON output.
 - `--verify` no longer rewrites the schemas it checks. hypothesis-jsonschema resolves `$ref`s in

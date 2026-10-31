@@ -125,6 +125,20 @@ def test_measure_stdin_and_output_file(runner: CliRunner, tmp_path: Path) -> Non
     assert out.read_text(encoding="utf-8").startswith("### toolism — tool definition tokens")
 
 
+def test_measure_accepts_a_file_with_a_utf8_bom(runner: CliRunner, tmp_path: Path) -> None:
+    path = tmp_path / "bom.json"
+    path.write_bytes(b"\xef\xbb\xbf" + json.dumps(BLOATED).encode("utf-8"))
+    result = invoke(runner, "measure", path)
+    assert result.exit_code == 0, result.output
+    assert "create_issue" in result.stdout
+
+
+def test_measure_accepts_stdin_with_a_utf8_bom(runner: CliRunner) -> None:
+    result = invoke(runner, "measure", "-", input="\ufeff" + json.dumps(BLOATED))
+    assert result.exit_code == 0, result.output
+    assert "create_issue" in result.stdout
+
+
 @pytest.mark.parametrize(
     ("args", "message"),
     [
