@@ -11,6 +11,8 @@ All notable changes to this project are documented here. The format follows
 - Opt-in persistent Anthropic token-count caching via `TOOLISM_CACHE_DIR`, including baseline,
   probe, marginal and ordered aggregate counts. Bounded, checksummed snapshots use atomic
   replacement and fixed 24-hour generations; README documents clearing and Actions cache use.
+- `toolism diff` gains an `--exit-code` flag that exits 1 when any tool would change,
+  making it easy to gate on unslimmed schemas in CI.
 - SL010 `single-allof` collapses single-branch `allOf` wrappers when their keywords can be
   merged without changing validation. Strict tools and uncertain dialect or reference scopes
   are left alone.

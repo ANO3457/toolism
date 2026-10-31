@@ -83,12 +83,14 @@ at servers you would run anyway. See [SECURITY.md](SECURITY.md).
 ```bash
 toolism diff examples/mcp_tools.json
 toolism diff examples/mcp_tools.json --level annotations -o tools.diff
+toolism diff examples/mcp_tools.json --exit-code  # exits 1 if changes found (CI)
 ```
 
 The preview shows normalized JSON for each tool's name, description and input schema.
 Unchanged tools are omitted; a tool-order change alone produces no diff. `--level`,
 `--enable`, `--disable` and `--option` select the same rewrites as `slim`. The preview runs
-locally without a reporting-tokenizer call. Use `-` for stdin and `--output` to write a file.
+locally without a reporting-tokenizer call. Use `-` for stdin, `--output` to write a file,
+and `--exit-code` to exit 1 when differences are found.
 
 **Gate** it in CI against a committed baseline:
 

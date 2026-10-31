@@ -568,6 +568,28 @@ def test_diff_omits_unchanged_tools(runner: CliRunner, document: Any) -> None:
     assert result.stderr == "No changes.\n"
 
 
+def test_diff_exit_code_exits_one_on_changes_and_still_prints_diff(runner: CliRunner) -> None:
+    document = [{"name": "search", "inputSchema": {"title": "searchArguments", "type": "object"}}]
+    # Without --exit-code, exit code is 0
+    res_default = invoke(runner, "diff", "-", input=json.dumps(document))
+    assert res_default.exit_code == 0
+    assert '--- "search" (before)\n' in res_default.stdout
+
+    # With --exit-code, exit code is 1 and diff is still printed to stdout
+    result = invoke(runner, "diff", "-", "--exit-code", input=json.dumps(document))
+    assert result.exit_code == 1
+    assert result.stderr == ""
+    assert result.stdout == res_default.stdout
+
+
+def test_diff_exit_code_exits_zero_when_no_changes(runner: CliRunner) -> None:
+    document = [{"name": "ping", "inputSchema": {"type": "object"}}]
+    result = invoke(runner, "diff", "-", "--exit-code", input=json.dumps(document))
+    assert result.exit_code == 0
+    assert result.stdout == ""
+    assert result.stderr == "No changes.\n"
+
+
 @pytest.mark.parametrize(
     ("args", "changes"),
     [
