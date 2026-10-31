@@ -51,6 +51,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- SL008 no longer drops `additionalProperties: true`, `items: {}` and similar keywords from a tool
+  whose schema restricts `unevaluatedProperties` or `unevaluatedItems`. These keywords mark
+  locations as evaluated there, so dropping them could reject tool calls that were valid.
 - Tool files saved with a UTF-8 BOM (PowerShell, some Windows editors) now load from a path,
   from stdin, and through `toolism.loads`; the BOM is stripped before parsing.
 - `toolism diff` now reports `No changes.` on stderr when the rendered diff is empty.
